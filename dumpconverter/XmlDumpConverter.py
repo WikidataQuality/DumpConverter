@@ -44,6 +44,9 @@ class XmlDumpConverter(DumpConverter):
                     for entity_id, property_id, external_values in self.process_entity(element):
                         yield entity_id, property_id, external_values
 
+                    # Print progress
+                    self.print_processing_progress(dump_file.tell())
+
                     # Clean up unneeded references
                     # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
                     element.clear()

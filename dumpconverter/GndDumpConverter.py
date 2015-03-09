@@ -42,7 +42,7 @@ class GndDumpConverter(XmlDumpConverter):
         # Process dump
         for external_id, property_id, external_values in self.process_dump(uncompressed_dump_file):
             for external_value in external_values:
-                self.write__entities_csv_row(self.DATA_SOURCE_PROPERTY_ID, external_id, property_id, external_value)
+                self.write_entities_csv_row(self.DATA_SOURCE_PROPERTY_ID, external_id, property_id, external_value)
 
         # Close file
         uncompressed_dump_file.close()

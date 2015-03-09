@@ -75,6 +75,18 @@ class DumpConverter(object):
             # Print only downloaded size as total size is unknown
             sys.stdout.write("{0}\r".format(DumpConverter.format_bytes(downloaded_bytes)))
 
+    # Prints progress of processing dump to console.
+    @staticmethod
+    def print_processing_progress(processed_bytes, total_bytes=-1):
+        sys.stdout.write("Processing database dump... ")
+        if total_bytes > 0:
+            # Calculate and print progress
+            progress = float(processed_bytes) / total_bytes * 100
+            sys.stdout.write("{0}%\r".format(round(progress, 2)))
+        else:
+            # Print only processed size as total size is unknown
+            sys.stdout.write("{0}\r".format(DumpConverter.format_bytes(processed_bytes)))
+
     # Formats number of bytes to string with suitable unit.
     @staticmethod
     def format_bytes(bytes, precision=2):
@@ -88,7 +100,7 @@ class DumpConverter(object):
             return '0 B'
 
     # Write single row to entities csv file
-    def write__entities_csv_row(self, identifier_pid, external_id, pid, value):
+    def write_entities_csv_row(self, identifier_pid, external_id, pid, value):
         row = (identifier_pid, external_id, pid, value.encode("utf-8"))
         self.csv_entities_writer.writerow(row)
 
