@@ -3,6 +3,7 @@ import sys
 import math
 import urllib2
 import tempfile
+import datetime
 
 
 class DumpConverter(object):
@@ -10,7 +11,8 @@ class DumpConverter(object):
     DOWNLOAD_TIMEOUT = 10
     DOWNLOAD_BUFFER_SIZE = 8192
 
-    def __init__(self, csv_entities_file, csv_meta_file, source_item_id, source_property_id, data_source_language, data_source_license):
+    def __init__(self, csv_entities_file, csv_meta_file, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license):
+        self.data_source_id = data_source_id
         self.data_source_item_id = source_item_id
         self.data_source_property_id = source_property_id
         self.data_source_language = data_source_language
@@ -49,7 +51,7 @@ class DumpConverter(object):
             destination_file.write(buffer)
 
             # Show progress
-            self.print_download_progress(downloaded_bytes, total_bytes)
+            self.print_progress("Downloading database dump...{0}", downloaded_bytes, total_bytes)
 
         # Flush file at end and move read/write pointer to beginning of file
         destination_file.flush()
@@ -63,29 +65,19 @@ class DumpConverter(object):
 
         return destination_file
 
-    # Prints progress of download to console.
+    # Prints progress of an i/o process.
     @staticmethod
-    def print_download_progress(downloaded_bytes, total_bytes):
-        sys.stdout.write("Downloading database dump... ")
+    def print_progress(message, read_bytes, total_bytes=-1):
         if total_bytes > 0:
             # Calculate and print progress
-            progress = float(downloaded_bytes) / total_bytes * 100
-            sys.stdout.write("{0}%\r".format(round(progress, 2)))
-        else:
-            # Print only downloaded size as total size is unknown
-            sys.stdout.write("{0}\r".format(DumpConverter.format_bytes(downloaded_bytes)))
-
-    # Prints progress of processing dump to console.
-    @staticmethod
-    def print_processing_progress(processed_bytes, total_bytes=-1):
-        sys.stdout.write("Processing database dump... ")
-        if total_bytes > 0:
-            # Calculate and print progress
-            progress = float(processed_bytes) / total_bytes * 100
-            sys.stdout.write("{0}%\r".format(round(progress, 2)))
+            progress = float(read_bytes) / total_bytes * 100
+            message = message.format(round(progress, 2) + "%")
         else:
             # Print only processed size as total size is unknown
-            sys.stdout.write("{0}\r".format(DumpConverter.format_bytes(processed_bytes)))
+            message = message.format(DumpConverter.format_bytes(read_bytes))
+
+        message += "\r"
+        sys.stdout.write(message )
 
     # Formats number of bytes to string with suitable unit.
     @staticmethod
@@ -107,7 +99,9 @@ class DumpConverter(object):
     # Writes data source meta information to csv file
     def write_meta_information(self):
         row = (
+            self.data_source_id,
             self.data_source_item_id,
+            datetime.datetime.utcnow(),
             self.data_source_language,
             self.data_source_url,
             self.data_source_size,

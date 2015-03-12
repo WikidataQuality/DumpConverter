@@ -7,6 +7,7 @@ from propertymappings import gnd
 
 class GndDumpConverter(XmlDumpConverter):
     # Data source properties
+    DATA_SOURCE_ID = 4408050
     DATA_SOURCE_LANGUAGE = "de"
     DATA_SOURCE_LICENSE = "CC0 1.0"
     DATA_SOURCE_ITEM_ID = "36578"
@@ -22,6 +23,7 @@ class GndDumpConverter(XmlDumpConverter):
         super(GndDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
+            self.DATA_SOURCE_ID,
             self.DATA_SOURCE_ITEM_ID,
             self.DATA_SOURCE_PROPERTY_ID,
             self.DATA_SOURCE_LANGUAGE,
