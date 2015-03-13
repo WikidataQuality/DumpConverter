@@ -66,16 +66,18 @@ class XmlDumpConverter(DumpConverter):
         # Evaluate mapping and extract values
         for property_id, mapping in self.property_mapping.iteritems():
             # Get affected nodes/texts
-            results = element.xpath(mapping["nodeSelector"], namespaces=self.namespace_map)
-            if results:
+            nodes = []
+            for nodeSelector in mapping["nodeSelector"]:
+                nodes.append(element.xpath(nodeSelector, namespaces=self.namespace_map))
+            if nodes:
                 # If value formatter is provided, apply on each result
                 if "valueFormatter" in mapping:
                     external_values = []
-                    for result in results:
-                        result = result.xpath(mapping["valueFormatter"], namespaces=self.namespace_map)
-                        if result:
-                            external_values.append(result)
+                    for node in nodes:
+                        node = node.xpath(mapping["valueFormatter"], namespaces=self.namespace_map)
+                        if node:
+                            external_values.append(node)
                 else:
-                    external_values = results
+                    external_values = nodes
 
                 yield entity_id, property_id, external_values
