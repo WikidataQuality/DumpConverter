@@ -17,9 +17,18 @@ property_mapping = {
         "nodeSelector": "ns:datafield[@tag='500' and ns:subfield[@code='9']='v:Ehemann' or ns:subfield[@code='9']='v:Ehefrau']/ns:subfield[@code='a']",
         "valueFormatter": "concat(substring-after(./text(), ', '), ' ', substring-before(./text(), ', '))"
         },
+    39: {
+        "nodeSelector": "/record/datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']"
+        },
     40: {
         "nodeSelector": "ns:datafield[@tag='500' and ns:subfield[@code='9']='v:Sohn' or ns:subfield[@code='9']='v:Tochter']/ns:subfield[@code='a']",
         "valueFormatter": "concat(substring-after(./text(), ', '), ' ', substring-before(./text(), ', '))"
+        },
+    106: {
+         "nodeSelector": "/record/datafield[@tag='550' and (subfield[@code='i']='Charakteristischer Beruf' or subfield[@code='i']='Beruf')]/subfield[@code='a']"
+        },
+    410: {
+        "nodeSelector": "/record/datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']"
         },
     569: {
         "nodeSelector": "ns:datafield[@tag='548' and ns:subfield[@code='i']='Exakte Lebensdaten']/ns:subfield[@code='a']",
