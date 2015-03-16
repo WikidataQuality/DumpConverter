@@ -36,10 +36,11 @@ class GndDumpConverter(XmlDumpConverter):
     # Starts whole convert process.
     def execute(self):
         # Download dump
-        dump_file = self.download_dump()
+        #dump_file = self.download_dump()
 
         # Open compressed dump as gzip file
-        uncompressed_dump_file = gzip.GzipFile(mode="rb", fileobj=dump_file)
+        #uncompressed_dump_file = gzip.GzipFile(mode="rb", fileobj=dump_file)
+        uncompressed_dump_file = open("dump.xml", "wb")
 
         # Process dump
         for external_id, property_id, external_values in self.process_dump(uncompressed_dump_file):
@@ -48,7 +49,7 @@ class GndDumpConverter(XmlDumpConverter):
 
         # Close file
         uncompressed_dump_file.close()
-        dump_file.close()
+        #dump_file.close()
 
         # Write meta information
         self.write_meta_information()

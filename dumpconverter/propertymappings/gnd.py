@@ -39,7 +39,8 @@ property_mapping = {
         "valueFormatter": "substring-after(./text(), '-')"
         },
     625: {
-        "nodeSelector": "ns:datafield[@tag='034' and ns:subfield[@code='9']='A:dgx']/ns:subfield[@code='d']",
+        "nodeSelector": ["ns:datafield[@tag='034' and ns:subfield[@code='9']='A:dgx']/ns:subfield[@code='d']/text()",
+                         "ns:datafield[@tag='034' and ns:subfield[@code='9']='A:dgx']/ns:subfield[@code='f']/text()"]
         },
     1477: {
         "nodeSelector": "ns:datafield[@tag='400' and ns:subfield[@code='i']='Wirklicher Name']/ns:subfield[@code='a']",
