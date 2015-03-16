@@ -91,6 +91,14 @@ class DumpConverter(object):
         else:
             return '0 B'
 
+    # Runs given formatter on specified list of nodes.
+    @staticmethod
+    def run_formatter(formatter, nodes):
+        try:
+            return eval(formatter)
+        except:
+            pass
+
     # Write single row to entities csv file
     def write_entities_csv_row(self, identifier_pid, external_id, pid, value):
         row = (identifier_pid, external_id, pid, value.encode("utf-8"))

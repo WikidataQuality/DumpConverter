@@ -59,25 +59,36 @@ class XmlDumpConverter(DumpConverter):
         sys.stdout.write("\n")
 
     # Processes single entity of the dump
-    def process_entity(self, element):
+    def process_entity(self, entity):
         # Get entity id
-        entity_id = element.xpath(self.entity_id_path, namespaces=self.namespace_map)[0]
+        entity_id = entity.xpath(self.entity_id_path, namespaces=self.namespace_map)[0]
 
         # Evaluate mapping and extract values
-        for property_id, mapping in self.property_mapping.iteritems():
-            # Get affected nodes/texts
-            nodes = []
-            for nodeSelector in mapping["nodeSelector"]:
-                nodes.append(element.xpath(nodeSelector, namespaces=self.namespace_map))
-            if nodes:
-                # If value formatter is provided, apply on each result
-                if "valueFormatter" in mapping:
-                    external_values = []
-                    for node in nodes:
-                        node = node.xpath(mapping["valueFormatter"], namespaces=self.namespace_map)
-                        if node:
-                            external_values.append(node)
-                else:
-                    external_values = nodes
+        for property_id, mappings in self.property_mapping.iteritems():
+            for mapping in mappings:
+                # Get affected elements
+                elements = []
+                for nodeSelector in mapping['nodes']:
+                    # Evaluate xpath node selector
+                    result = entity.xpath(nodeSelector, namespaces=self.namespace_map)
 
-                yield entity_id, property_id, external_values
+                    # Append result to nodes list in correct format
+                    for i in range(0, len(result)):
+                        if i >= len(elements):
+                            elements.append([])
+                        elements[i].append(result[i])
+
+                # Run formatter on nodes if provided
+                # Otherwise concat list of affected nodes
+                external_values = []
+                if "formatter" in mapping:
+                    for element in elements:
+                        formatted_value = self.run_formatter(mapping['formatter'], element)
+                        if formatted_value:
+                            external_values.append(formatted_value)
+                else:
+                    for element in elements:
+                        external_values += element
+
+                if external_values:
+                    yield entity_id, property_id, external_values
