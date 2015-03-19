@@ -2,17 +2,27 @@ import gzip
 import datetime
 
 from XmlDumpConverter import *
+from exceptions import DownloadError
 from propertymappings import gnd
 
 
 class GndDumpConverter(XmlDumpConverter):
-    # Data source properties
+    # Data source metadata
     DATA_SOURCE_ID = 4408050
-    DATA_SOURCE_LANGUAGE = "de"
-    DATA_SOURCE_LICENSE = "CC0 1.0"
-    DATA_SOURCE_ITEM_ID = "36578"
-    DATA_SOURCE_PROPERTY_ID = "227"
-    DATA_SOURCE_URL_FORMAT = "http://datendienst.dnb.de/cgi-bin/mabit.pl?cmd=fetch&userID=GNDxml&pass=gndmarcxml{0}{1}&mabheft=Tpgesamt{0}{2}gndmrc.xml.gz"
+    LANGUAGE = "de"
+    LICENSE = "CC0 1.0"
+    ITEM_ID = "36578"
+    PROPERTY_ID = "227"
+
+    # Download constants
+    FILE_PREFIXES = [
+        "Tpgesamt",
+        "Tggesamt",
+        "Tugesamt"
+    ]
+    URL_FORMAT = "http://datendienst.dnb.de/cgi-bin/mabit.pl?cmd=fetch&userID=GNDxml&pass=gndmarcxml{0}{1}&mabheft={2}{0}{3}gndmrc.xml.gz"
+
+    # XML preferences
     XML_NAMESPACE_MAP = {
         "ns": "http://www.loc.gov/MARC21/slim"
     }
@@ -24,10 +34,10 @@ class GndDumpConverter(XmlDumpConverter):
             csv_entities_file,
             csv_meta_file,
             self.DATA_SOURCE_ID,
-            self.DATA_SOURCE_ITEM_ID,
-            self.DATA_SOURCE_PROPERTY_ID,
-            self.DATA_SOURCE_LANGUAGE,
-            self.DATA_SOURCE_LICENSE,
+            self.ITEM_ID,
+            self.PROPERTY_ID,
+            self.LANGUAGE,
+            self.LICENSE,
             self.XML_NAMESPACE_MAP,
             self.XML_ENTITIES_PATH,
             self.XML_ENTITY_ID_PATH,
@@ -35,27 +45,40 @@ class GndDumpConverter(XmlDumpConverter):
 
     # Starts whole convert process.
     def execute(self):
-        # Download dump
-        dump_file = self.download_dump()
+        for file_prefix in self.FILE_PREFIXES:
+            # Print file prefix
+            print "Start to convert '{0}'".format(file_prefix)
 
-        # Open compressed dump as gzip file
-        uncompressed_dump_file = gzip.GzipFile(mode="rb", fileobj=dump_file)
+            # Get dump url
+            dump_url = self.get_dump_url(file_prefix)
 
-        # Process dump
-        for external_id, property_id, external_values in self.process_dump(uncompressed_dump_file):
-            for external_value in external_values:
-                self.write_entities_csv_row(self.DATA_SOURCE_PROPERTY_ID, external_id, property_id, external_value)
+            # Download dump
+            try:
+                dump_file = self.download_dump(dump_url)
+            except DownloadError.DownloadError:
+                dump_url = self.get_dump_url(file_prefix, fallback=True)
+                dump_file = self.download_dump(dump_url)
 
-        # Close file
-        uncompressed_dump_file.close()
-        dump_file.close()
+            # Open compressed dump as gzip file
+            uncompressed_dump_file = gzip.GzipFile(mode="rb", fileobj=dump_file)
 
-        # Write meta information
-        self.write_meta_information()
+            # Process dump
+            for external_id, property_id, external_values in self.process_dump(uncompressed_dump_file):
+                for external_value in external_values:
+                    self.write_entities_csv_row(self.PROPERTY_ID, external_id, property_id, external_value)
 
-    # Returns url of the latest dump.
+            # Close file
+            uncompressed_dump_file.close()
+            dump_file.close()
+
+            # Write meta information
+            self.write_meta_information(dump_url)
+
+            print
+
+    # Returns url of the latest dump with specified prefix.
     # If fallback option is set to True, url of previous dump will be returned.
-    def get_data_source_url(self, fallback=False):
+    def get_dump_url(self, prefix, fallback=False):
         now = datetime.date.today()
 
         # If dump file does not exist, fallback option can be set True to build url of previous dump.
@@ -82,4 +105,4 @@ class GndDumpConverter(XmlDumpConverter):
             month = "10"
         year = now.strftime("%y")
 
-        return self.DATA_SOURCE_URL_FORMAT.format(year, index, month)
+        return self.URL_FORMAT.format(year, index, prefix, month)

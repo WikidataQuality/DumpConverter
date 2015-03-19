@@ -100,7 +100,7 @@ property_mapping = {
             "nodes": [
                 "ns:datafield[@tag='548' and ns:subfield[@code='i']='Exakte Lebensdaten']/ns:subfield[@code='a']/text()"
             ],
-            "formatter": "nodes[0].split('-')[0]"
+            "formatter": "nodes[0].split('-')[0].replace('XX.', '')"
         }
     ],
     570: [
@@ -108,7 +108,7 @@ property_mapping = {
             "nodes": [
                 "ns:datafield[@tag='548' and ns:subfield[@code='i']='Exakte Lebensdaten']/ns:subfield[@code='a']/text()"
             ],
-            "formatter": "nodes[0].split('-')[1]"
+            "formatter": "nodes[0].split('-')[1].replace('XX.', '')"
         }
     ],
     625: [

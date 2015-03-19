@@ -5,6 +5,8 @@ import urllib2
 import tempfile
 import datetime
 
+from exceptions import DownloadError
+
 
 class DumpConverter(object):
     # Download parameter
@@ -16,7 +18,6 @@ class DumpConverter(object):
         self.data_source_item_id = source_item_id
         self.data_source_property_id = source_property_id
         self.data_source_language = data_source_language
-        self.data_source_url = self.get_data_source_url()
         self.data_source_license = data_source_license
         self.data_source_size = 0
 
@@ -24,46 +25,55 @@ class DumpConverter(object):
         self.csv_entities_writer = csv.writer(csv_entities_file)
         self.csv_meta_writer = csv.writer(csv_meta_file)
 
-    # Downloads latest dump to temporary file and returns it.
-    def download_dump(self):
+    # Downloads dump specified by url to temporary file and returns it.
+    def download_dump(self, url):
         # Initialize download
-        response = urllib2.urlopen(self.data_source_url, timeout=self.DOWNLOAD_TIMEOUT)
+        try:
+            response = urllib2.urlopen(url, timeout=self.DOWNLOAD_TIMEOUT)
+        except urllib2.URLError as e:
+            raise DownloadError.DownloadError(e.reason.strerror)
 
-        # Get total size
-        meta = response.info()
-        content_length = meta.getheaders("Content-Length")
-        if len(content_length) > 0:
-            total_bytes = int(content_length[0])
+        # Check, if request was successful
+        http_status_code = response.getcode()
+        if http_status_code == 200:
+            # Get total size
+            meta = response.info()
+            content_length = meta.getheaders("Content-Length")
+            if len(content_length) > 0:
+                total_bytes = int(content_length[0])
+            else:
+                total_bytes = -1
+
+            # Start download
+            downloaded_bytes = 0
+            self.data_source_size = 0
+            destination_file = tempfile.TemporaryFile()
+            while True:
+                # Read block
+                buffer = response.read(self.DOWNLOAD_BUFFER_SIZE)
+                if not buffer:
+                    break
+
+                # Write block to file
+                downloaded_bytes += len(buffer)
+                destination_file.write(buffer)
+
+                # Show progress
+                self.print_progress("Downloading database dump...{0}", downloaded_bytes, total_bytes)
+
+            # Flush file at end and move read/write pointer to beginning of file
+            destination_file.flush()
+            destination_file.seek(0)
+
+            # Set file size
+            self.data_source_size += downloaded_bytes
+
+            # Write new line to console to now overwrite progress
+            sys.stdout.write("\n")
+
+            return destination_file
         else:
-            total_bytes = -1
-
-        # Start download
-        downloaded_bytes = 0
-        destination_file = tempfile.TemporaryFile()
-        while True:
-            # Read block
-            buffer = response.read(self.DOWNLOAD_BUFFER_SIZE)
-            if not buffer:
-                break
-
-            # Write block to file
-            downloaded_bytes += len(buffer)
-            destination_file.write(buffer)
-
-            # Show progress
-            self.print_progress("Downloading database dump...{0}", downloaded_bytes, total_bytes)
-
-        # Flush file at end and move read/write pointer to beginning of file
-        destination_file.flush()
-        destination_file.seek(0)
-
-        # Set file size
-        self.data_source_size = downloaded_bytes
-
-        # Write new line to console to now overwrite progress
-        sys.stdout.write("\n")
-
-        return destination_file
+            raise DownloadError.DownloadError("HTTP response returned status code" + http_status_code)
 
     # Prints progress of an i/o process.
     @staticmethod
@@ -101,17 +111,22 @@ class DumpConverter(object):
 
     # Write single row to entities csv file
     def write_entities_csv_row(self, identifier_pid, external_id, pid, value):
-        row = (identifier_pid, external_id, pid, value.encode("utf-8"))
+        row = (
+            identifier_pid,
+            external_id,
+            pid,
+            value.encode("utf-8")
+        )
         self.csv_entities_writer.writerow(row)
 
     # Writes data source meta information to csv file
-    def write_meta_information(self):
+    def write_meta_information(self, data_source_url):
         row = (
             self.data_source_id,
             self.data_source_item_id,
             datetime.datetime.utcnow(),
             self.data_source_language,
-            self.data_source_url,
+            data_source_url,
             self.data_source_size,
             self.data_source_license
         )
