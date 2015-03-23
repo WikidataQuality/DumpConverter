@@ -1,0 +1,14 @@
+language: python
+python:
+    - 2.7
+
+install: 
+    - sudo apt-get install libxml2-dev libxslt-dev python-dev
+    - pip install -r requirements.txt
+
+script: 
+    - nosetests --verbose --with-coverage
+
+after_success:
+    - coveralls debug
+    - coveralls
