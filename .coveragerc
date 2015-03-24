@@ -1,5 +1,2 @@
 [report]
 omit = dumpconverter/tests/*
-
-[html]
-directory = coverage
