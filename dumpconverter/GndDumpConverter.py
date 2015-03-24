@@ -8,7 +8,7 @@ from propertymappings import gnd
 
 class GndDumpConverter(XmlDumpConverter):
     # Data source metadata
-    DATA_SOURCE_ID = 4408050
+    DATA_SOURCE_ID = '5d751705-ea7f-44c2-a3e5-27cf3ca55d62'
     LANGUAGE = "de"
     LICENSE = "CC0 1.0"
     ITEM_ID = "36578"
@@ -29,10 +29,11 @@ class GndDumpConverter(XmlDumpConverter):
     XML_ENTITIES_PATH = "ns:collection/ns:record"
     XML_ENTITY_ID_PATH = "ns:controlfield[@tag='001']/text()"
 
-    def __init__(self, csv_entities_file, csv_meta_file):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet):
         super(GndDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
+            is_quiet,
             self.DATA_SOURCE_ID,
             self.ITEM_ID,
             self.PROPERTY_ID,
@@ -43,11 +44,14 @@ class GndDumpConverter(XmlDumpConverter):
             self.XML_ENTITY_ID_PATH,
             gnd.property_mapping)
 
+        self.dump_urls = []
+
     # Starts whole convert process.
     def execute(self):
         for file_prefix in self.FILE_PREFIXES:
             # Print file prefix
-            print "Start to convert '{0}'".format(file_prefix)
+            if not self.is_quiet:
+                print "Start to convert '{0}'".format(file_prefix)
 
             # Get dump url
             dump_url = self.get_dump_url(file_prefix)
@@ -71,10 +75,14 @@ class GndDumpConverter(XmlDumpConverter):
             uncompressed_dump_file.close()
             dump_file.close()
 
-            # Write meta information
-            self.write_meta_information(dump_url)
+            # Add url of downloaded dump to url list
+            self.data_source_urls.append(dump_url)
 
-            print
+            if not self.is_quiet:
+                print
+
+        # Write meta information
+        self.write_meta_information()
 
     # Returns url of the latest dump with specified prefix.
     # If fallback option is set to True, url of previous dump will be returned.

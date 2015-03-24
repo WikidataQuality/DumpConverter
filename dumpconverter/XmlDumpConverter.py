@@ -6,10 +6,11 @@ from DumpConverter import DumpConverter
 
 
 class XmlDumpConverter(DumpConverter):
-    def __init__(self, csv_entities_file, csv_meta_file, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_path, entity_id_path, property_mapping):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_path, entity_id_path, property_mapping):
         super(XmlDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
+            is_quiet,
             data_source_id,
             source_item_id,
             source_property_id,
@@ -46,7 +47,8 @@ class XmlDumpConverter(DumpConverter):
                         yield entity_id, property_id, external_values
 
                     # Print progress
-                    self.print_progress("Process database dump...{0}", dump_file.tell())
+                    if not self.is_quiet:
+                        self.print_progress("Process database dump...{0}", dump_file.tell())
 
                     # Clean up unneeded references
                     # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/

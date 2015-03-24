@@ -13,13 +13,15 @@ class DumpConverter(object):
     DOWNLOAD_TIMEOUT = 10
     DOWNLOAD_BUFFER_SIZE = 8192
 
-    def __init__(self, csv_entities_file, csv_meta_file, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license):
+        self.is_quiet = is_quiet
         self.data_source_id = data_source_id
         self.data_source_item_id = source_item_id
         self.data_source_property_id = source_property_id
         self.data_source_language = data_source_language
         self.data_source_license = data_source_license
         self.data_source_size = 0
+        self.data_source_urls = []
 
         # Initialize csv writer
         self.csv_entities_writer = csv.writer(csv_entities_file)
@@ -46,20 +48,20 @@ class DumpConverter(object):
 
             # Start download
             downloaded_bytes = 0
-            self.data_source_size = 0
             destination_file = tempfile.TemporaryFile()
             while True:
                 # Read block
-                buffer = response.read(self.DOWNLOAD_BUFFER_SIZE)
-                if not buffer:
+                download_buffer = response.read(self.DOWNLOAD_BUFFER_SIZE)
+                if not download_buffer:
                     break
 
                 # Write block to file
-                downloaded_bytes += len(buffer)
-                destination_file.write(buffer)
+                downloaded_bytes += len(download_buffer)
+                destination_file.write(download_buffer)
 
                 # Show progress
-                self.print_progress("Downloading database dump...{0}", downloaded_bytes, total_bytes)
+                if not self.is_quiet:
+                    self.print_progress("Downloading database dump...{0}", downloaded_bytes, total_bytes)
 
             # Flush file at end and move read/write pointer to beginning of file
             destination_file.flush()
@@ -120,13 +122,13 @@ class DumpConverter(object):
         self.csv_entities_writer.writerow(row)
 
     # Writes data source meta information to csv file
-    def write_meta_information(self, data_source_url):
+    def write_meta_information(self):
         row = (
             self.data_source_id,
             self.data_source_item_id,
             datetime.datetime.utcnow(),
             self.data_source_language,
-            data_source_url,
+            ", ".join(self.data_source_urls),
             self.data_source_size,
             self.data_source_license
         )
