@@ -39,6 +39,8 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+coverage/
+__pycache__/
 
 # Translations
 *.mo
@@ -64,3 +66,6 @@ Thumbs.db
 
 # PHPStorm configuration
 .idea/
+
+# Temp-testdata
+/*.csv
