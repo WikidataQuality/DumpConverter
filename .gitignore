@@ -64,3 +64,6 @@ Thumbs.db
 
 # PHPStorm configuration
 .idea/
+
+# Temp-testdata
+/*.csv
