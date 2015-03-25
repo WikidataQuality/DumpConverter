@@ -58,6 +58,7 @@ class DumpConverterTest(TestCase):
 		dump_converter = DumpConverter(
 			self.csv_entities_file,
 			self.csv_meta_file,
+			True,
 			0,
 			42,
 			42,
