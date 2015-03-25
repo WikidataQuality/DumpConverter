@@ -1,2 +1,5 @@
 [report]
-omit = dumpconverter/tests/*
+omit = 
+    *__init__*
+    dumpconverter/propertymappings/*
+	dumpconverter/tests/*
