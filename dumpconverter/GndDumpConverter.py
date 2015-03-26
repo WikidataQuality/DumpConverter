@@ -8,7 +8,7 @@ from propertymappings import gnd
 
 class GndDumpConverter(XmlDumpConverter):
     # Data source metadata
-    DATA_SOURCE_ID = '5d751705-ea7f-44c2-a3e5-27cf3ca55d62'
+    DATA_SOURCE_ID = 1118435
     LANGUAGE = "de"
     LICENSE = "CC0 1.0"
     ITEM_ID = "36578"
