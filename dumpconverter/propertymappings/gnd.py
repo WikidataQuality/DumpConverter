@@ -1,3 +1,5 @@
+# coding: utf8
+
 property_mapping = {
     # Properties for Persons
     19: [
@@ -12,6 +14,14 @@ property_mapping = {
             "nodes": [
                 "ns:datafield[@tag='551' and ns:subfield[@code='i']='Sterbeort']/ns:subfield[@code='a']/text()"
             ]
+        }
+    ],
+    21: [
+        {
+            "nodes": [
+                "ns:datafield[@tag='375']/ns:subfield[@code='a']/text()"
+            ],
+            "formatter": "'männlich' if nodes[0] == '1' else 'weiblich'" 
         }
     ],
     22: [
@@ -62,7 +72,7 @@ property_mapping = {
     39: [
         {
             "nodes": [
-                "/record/datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']/text()"
+                "ns:datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']/text()"
             ]
         }
     ],
@@ -84,14 +94,14 @@ property_mapping = {
     106: [
         {
             "nodes": [
-                "/record/datafield[@tag='550' and (subfield[@code='i']='Charakteristischer Beruf' or subfield[@code='i']='Beruf')]/subfield[@code='a']/text()"
+                "ns:datafield[@tag='550' and (subfield[@code='i']='Charakteristischer Beruf' or subfield[@code='i']='Beruf')]/subfield[@code='a']/text()"
             ]
         }
     ],
     410: [
         {
             "nodes": [
-                "/record/datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']/text()"
+                "ns:datafield[@tag='550' and subfield[@code='i']='Funktion']/subfield[@code='a']/text()"
             ]
         }
     ],
@@ -119,6 +129,17 @@ property_mapping = {
             ],
             "formatter": "nodes[1] + ',' + nodes[0]"
         }
+    ],
+
+    # Properties for literary works
+    50: [
+    	{
+    		"nodes": [
+                "ns:datafield[@tag='100' and @ind1='1']/ns:subfield[@code='a']/text()"
+            ],
+            "formatter": "nodes[0].split(', ')[1] + ' ' + nodes[0].split(', ')[0]"
+    	}
+
     ],
 
     # Geographical properties

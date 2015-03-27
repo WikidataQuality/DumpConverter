@@ -117,7 +117,7 @@ class DumpConverter(object):
             identifier_pid,
             external_id,
             pid,
-            value.encode("utf-8")
+            value.encode
         )
         self.csv_entities_writer.writerow(row)
 

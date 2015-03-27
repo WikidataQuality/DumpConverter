@@ -78,7 +78,7 @@ class XmlDumpConverter(DumpConverter):
                     for i in range(0, len(result)):
                         if i >= len(elements):
                             elements.append([])
-                        elements[i].append(result[i])
+                        elements[i].append(result[i].encode("utf-8"))
 
                 # Run formatter on nodes if provided
                 # Otherwise concat list of affected nodes
