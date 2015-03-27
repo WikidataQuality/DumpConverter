@@ -59,7 +59,6 @@ class DumpConverterTest(TestCase):
 			self.csv_entities_file,
 			self.csv_meta_file,
 			True,
-			0,
 			42,
 			42,
 			"en",
