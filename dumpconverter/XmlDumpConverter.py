@@ -6,12 +6,11 @@ from DumpConverter import DumpConverter
 
 
 class XmlDumpConverter(DumpConverter):
-    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_path, entity_id_path, property_mapping):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_path, entity_id_path, property_mapping):
         super(XmlDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
             is_quiet,
-            data_source_id,
             source_item_id,
             source_property_id,
             data_source_language,

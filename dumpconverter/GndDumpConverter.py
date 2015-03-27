@@ -8,11 +8,10 @@ from propertymappings import gnd
 
 class GndDumpConverter(XmlDumpConverter):
     # Data source metadata
-    DATA_SOURCE_ID = 1118435
-    LANGUAGE = "de"
-    LICENSE = "CC0 1.0"
     ITEM_ID = "36578"
     PROPERTY_ID = "227"
+    LANGUAGE = "de"
+    LICENSE = "CC0 1.0"
 
     # Download constants
     FILE_PREFIXES = [
@@ -34,7 +33,6 @@ class GndDumpConverter(XmlDumpConverter):
             csv_entities_file,
             csv_meta_file,
             is_quiet,
-            self.DATA_SOURCE_ID,
             self.ITEM_ID,
             self.PROPERTY_ID,
             self.LANGUAGE,
