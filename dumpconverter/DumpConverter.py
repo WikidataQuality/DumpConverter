@@ -13,9 +13,8 @@ class DumpConverter(object):
     DOWNLOAD_TIMEOUT = 10
     DOWNLOAD_BUFFER_SIZE = 8192
 
-    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, data_source_id, source_item_id, source_property_id, data_source_language, data_source_license):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, source_item_id, source_property_id, data_source_language, data_source_license):
         self.is_quiet = is_quiet
-        self.data_source_id = data_source_id
         self.data_source_item_id = source_item_id
         self.data_source_property_id = source_property_id
         self.data_source_language = data_source_language
@@ -114,6 +113,7 @@ class DumpConverter(object):
     # Write single row to entities csv file
     def write_entities_csv_row(self, identifier_pid, external_id, pid, value):
         row = (
+            self.data_source_item_id,
             identifier_pid,
             external_id,
             pid,
@@ -124,7 +124,6 @@ class DumpConverter(object):
     # Writes data source meta information to csv file
     def write_meta_information(self):
         row = (
-            self.data_source_id,
             self.data_source_item_id,
             datetime.datetime.utcnow(),
             self.data_source_language,
