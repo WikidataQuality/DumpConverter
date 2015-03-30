@@ -2,4 +2,5 @@
 omit = 
     *__init__*
     dumpconverter/propertymappings/*
+	dumpconverter/exceptions/*
 	dumpconverter/tests/*
