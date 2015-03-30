@@ -82,25 +82,26 @@ class DumpConverter(object):
         if total_bytes > 0:
             # Calculate and print progress
             progress = float(read_bytes) / total_bytes * 100
-            message = message.format(round(progress, 2) + "%")
+            message = message.format(str(round(progress, 2)) + "%")
         else:
             # Print only processed size as total size is unknown
             message = message.format(DumpConverter.format_bytes(read_bytes))
 
         message += "\r"
-        sys.stdout.write(message )
+        sys.stdout.write(message)
 
     # Formats number of bytes to string with suitable unit.
     @staticmethod
     def format_bytes(bytes, precision=2):
-        units = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-        i = int(math.floor(math.log(bytes, 1024)))
-        p = math.pow(1024, i)
-        s = round(bytes / p, precision)
-        if s > 0:
-            return '%s %s' % (s, units[i])
-        else:
-            return '0 B'
+        if bytes > 0:
+            units = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+            i = int(math.floor(math.log(bytes, 1024)))
+            p = math.pow(1024, i)
+            s = round(bytes / p, precision)
+            if s > 0:
+                return '%s %s' % (s, units[i])
+
+        return '0 B'
 
     # Runs given formatter on specified list of nodes.
     @staticmethod

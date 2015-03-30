@@ -133,12 +133,12 @@ property_mapping = {
 
     # Properties for literary works
     50: [
-    	{
-    		"nodes": [
+        {
+            "nodes": [
                 "ns:datafield[@tag='100' and @ind1='1']/ns:subfield[@code='a']/text()"
             ],
             "formatter": "nodes[0].split(', ')[1] + ' ' + nodes[0].split(', ')[0]"
-    	}
+        }
 
     ],
 
