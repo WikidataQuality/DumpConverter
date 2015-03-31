@@ -1,5 +1,6 @@
 import sys
 from lxml import etree
+import pytest
 
 
 from DumpConverter import DumpConverter
@@ -42,11 +43,11 @@ class XmlDumpConverter(DumpConverter):
             if event == "end":
                 if "/".join(node_path) == self.entities_path:
                     # Process entity
-                    for external_value_tuple in self.process_entity(element):
-                        if external_value_tuple is not None:
-                            yield external_value_tuple
+                    for external_value in self.process_entity(element):
+                        yield external_value
 
                     # Print progress
+                    test = list(self.process_entity(element))
                     if not self.is_quiet:
                         self.print_progress("Process database dump...{0}", dump_file.tell())
 
@@ -60,6 +61,9 @@ class XmlDumpConverter(DumpConverter):
         # Write new line to console to now overwrite progress
         if not self.is_quiet:
             sys.stdout.write("\n")
+
+        return
+        yield
 
     # Processes single entity of the dump
     def process_entity(self, entity):
@@ -98,3 +102,6 @@ class XmlDumpConverter(DumpConverter):
 
             if external_values:
                 yield entity_id, property_id, external_values
+
+        return
+        yield

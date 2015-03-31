@@ -8,8 +8,8 @@ from propertymappings import gnd
 
 class GndDumpConverter(XmlDumpConverter):
     # Data source metadata
-    ITEM_ID = "36578"
-    PROPERTY_ID = "227"
+    ITEM_ID = 36578
+    PROPERTY_ID = 227
     LANGUAGE = "de"
     LICENSE = "CC0 1.0"
 
@@ -25,8 +25,8 @@ class GndDumpConverter(XmlDumpConverter):
     XML_NAMESPACE_MAP = {
         "ns": "http://www.loc.gov/MARC21/slim"
     }
-    XML_ENTITIES_PATH = "ns:collection/ns:record"
-    XML_ENTITY_ID_PATH = "ns:controlfield[@tag='001']/text()"
+    XML_ENTITIES_XPATH = "ns:collection/ns:record"
+    XML_ENTITY_ID_XPATH = "ns:controlfield[@tag='001']/text()"
 
     def __init__(self, csv_entities_file, csv_meta_file, is_quiet):
         super(GndDumpConverter, self).__init__(
@@ -38,8 +38,8 @@ class GndDumpConverter(XmlDumpConverter):
             self.LANGUAGE,
             self.LICENSE,
             self.XML_NAMESPACE_MAP,
-            self.XML_ENTITIES_PATH,
-            self.XML_ENTITY_ID_PATH,
+            self.XML_ENTITIES_XPATH,
+            self.XML_ENTITY_ID_XPATH,
             gnd.property_mapping)
 
         self.dump_urls = []
@@ -84,31 +84,32 @@ class GndDumpConverter(XmlDumpConverter):
 
     # Returns url of the latest dump with specified prefix.
     # If fallback option is set to True, url of previous dump will be returned.
-    def get_dump_url(self, prefix, fallback=False):
-        now = datetime.date.today()
-
+    def get_dump_url(self, prefix, fallback=False, date=datetime.date.today()):
         # If dump file does not exist, fallback option can be set True to build url of previous dump.
         # This will be applicable, if new dump should be already available, but was not published yet.
         if fallback:
-            previous_month = now.month - 4
+            previous_month = date.month - 4
+            previous_year = date.year
             if previous_month <= 0:
-                previous_month = (now.month - 4) % 12
-            now = datetime.date(now.year - 1, previous_month, now.day)
+                previous_month = (date.month - 4) % 12
+                previous_year -= 1
+            date = datetime.date(previous_year, previous_month, 1)
 
         # Set parameter depending on month
-        if now.month == 1:
+        year = date.year
+        if date.month == 1:
             index = 3
             month = "10"
-            now.year -= 1
-        elif now.month < 6:
+            year -= 1
+        elif date.month < 6:
             index = 1
             month = "02"
-        elif now.month < 10:
+        elif date.month < 10:
             index = 2
             month = "06"
         else:
             index = 3
             month = "10"
-        year = now.strftime("%y")
+        year = str(year)[-2:]
 
         return self.URL_FORMAT.format(year, index, prefix, month)
