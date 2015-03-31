@@ -1,6 +1,6 @@
 import pytest
 
-from lxml import etree
+from lxml import etree, objectify
 
 import os
 from io import BytesIO
@@ -55,10 +55,11 @@ def test_process_dump():
 
     # Run assertions
     assert len(expected_result) == len(actual_result)
-    for i in range(0, len(expected_result)):
-        assert expected_result[i].tag == actual_result[i].tag
-        assert expected_result[i].attrib == actual_result[i].attrib
-        assert expected_result[i].sourceline == actual_result[i].sourceline
+
+    deannotate_function = lambda x: objectify.deannotate(x, cleanup_namespaces=True)
+    actual_result = map(deannotate_function, actual_result)
+    expected_result = map(deannotate_function, expected_result)
+    assert expected_result == actual_result
 
 
 @pytest.mark.parametrize(["entity_file_path", "expected_result"], [
