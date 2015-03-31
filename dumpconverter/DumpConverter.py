@@ -32,7 +32,7 @@ class DumpConverter(object):
         try:
             response = urllib2.urlopen(url, timeout=self.DOWNLOAD_TIMEOUT)
         except urllib2.URLError as e:
-            raise DownloadError.DownloadError(e.reason.strerror)
+            raise DownloadError.DownloadError(e.reason)
 
         # Check, if request was successful
         http_status_code = response.getcode()
@@ -74,7 +74,7 @@ class DumpConverter(object):
 
             return destination_file
         else:
-            raise DownloadError.DownloadError("HTTP response returned status code" + http_status_code)
+            raise DownloadError.DownloadError("HTTP response returned status code" + str(http_status_code))
 
     # Prints progress of an i/o process.
     @staticmethod

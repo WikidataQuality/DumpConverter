@@ -14,19 +14,19 @@ from dumpconverter.GndDumpConverter import GndDumpConverter
         (227, "119033364", 19, "Cambridge"),
         (227, "119033364", 20, "Santa Barbara, Calif."),
         (227, "119033364", 21, "m\xc3\xa4nnlich"),
-        (227, '119033364', 50, 'Douglas Adams'),
-        (227, '119033364', 569, '11.03.1952'),
-        (227, '119033364', 570, '11.05.2001'),
-        (227, '11876439X', 19, 'Wakefield'),
-        (227, '11876439X', 20, 'Mount Vernon, Va.'),
-        (227, '11876439X', 21, 'm\xc3\xa4nnlich'),
-        (227, '11876439X', 26, 'Martha Washington'),
-        (227, '11876439X', 50, 'George Washington'),
-        (227, '11876439X', 569, '22.02.1732'),
-        (227, '11876439X', 570, '14.12.1799')
+        (227, "119033364", 50, "Douglas Adams"),
+        (227, "119033364", 569, "11.03.1952"),
+        (227, "119033364", 570, "11.05.2001"),
+        (227, "11876439X", 19, "Wakefield"),
+        (227, "11876439X", 20, "Mount Vernon, Va."),
+        (227, "11876439X", 21, "m\xc3\xa4nnlich"),
+        (227, "11876439X", 26, "Martha Washington"),
+        (227, "11876439X", 50, "George Washington"),
+        (227, "11876439X", 569, "22.02.1732"),
+        (227, "11876439X", 570, "14.12.1799")
     ]
 ])
-def test_execute(expected_value_quadruplets):
+def test_execute_success(expected_value_quadruplets):
     # Variable for counting number of external value quadruplets
     # In order to access this variable from inner function, array instead of integer is used (workaround)
     actual_value_count = [0]

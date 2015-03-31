@@ -3,7 +3,33 @@ import unittest
 
 from io import BytesIO
 
+from dumpconverter.exceptions import DownloadError
 from dumpconverter.DumpConverter import DumpConverter
+
+
+def test_download_dump_success():
+    # Create converter
+    dump_converter = create_dump_converter()
+
+    # Download test page that returns 200
+    url = "http://httpstat.us/200"
+    downloaded_file = dump_converter.download_dump(url)
+
+    # Run assertions
+    assert 0 == downloaded_file.tell()
+    assert dump_converter.data_source_size == get_file_size(downloaded_file)
+    assert "200 OK" == downloaded_file.read()
+
+
+@pytest.mark.parametrize("url", [
+    "http://httpstat.us/204",
+    "http://httpstat.us/404",
+    "http://httpstat.us/418"
+])
+def test_download_dump_error(url):
+    with pytest.raises(DownloadError.DownloadError):
+        dump_converter = create_dump_converter()
+        dump_converter.download_dump(url)
 
 
 @pytest.mark.parametrize(["message", "read_bytes", "total_bytes", "expected_output"], [
@@ -161,8 +187,18 @@ def test_write_meta_information():
     csv_meta_file.close()
 
 
+# Returns the size of a given file object
+def get_file_size(file_obj):
+    original_position = file_obj.tell()
+    file_obj.seek(0, 2)
+    size = file_obj.tell()
+    file_obj.seek(original_position)
+
+    return size
+
+
 # Creates dump converter instance for testing
-def create_dump_converter(csv_entities_file, csv_meta_file):
+def create_dump_converter(csv_entities_file=BytesIO(), csv_meta_file=BytesIO()):
     dump_converter = DumpConverter(
         csv_entities_file,
         csv_meta_file,
