@@ -1,6 +1,5 @@
 import sys
 from lxml import etree
-import pytest
 
 
 from DumpConverter import DumpConverter
@@ -47,7 +46,6 @@ class XmlDumpConverter(DumpConverter):
                         yield external_value
 
                     # Print progress
-                    test = list(self.process_entity(element))
                     if not self.is_quiet:
                         self.print_progress("Process database dump...{0}", dump_file.tell())
 
