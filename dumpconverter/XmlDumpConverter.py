@@ -6,7 +6,7 @@ from DumpConverter import DumpConverter
 
 
 class XmlDumpConverter(DumpConverter):
-    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_path, entity_id_path, property_mapping):
+    def __init__(self, csv_entities_file, csv_meta_file, is_quiet, source_item_id, source_property_id, data_source_language, data_source_license, namespace_map, entities_xpath, entity_id_path, property_mapping):
         super(XmlDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
@@ -17,16 +17,16 @@ class XmlDumpConverter(DumpConverter):
             data_source_license)
 
         self.namespace_map = namespace_map
-        self.entities_path = self.apply_namespace_map(entities_path, namespace_map)
+        self.entities_xpath = entities_xpath
+        self.entities_path = self.apply_namespace_map(entities_xpath)
         self.entity_id_path = entity_id_path
         self.property_mapping = property_mapping
 
     # Applies namespace map on specified node path
-    @staticmethod
-    def apply_namespace_map(entities_path, namespace_map):
+    def apply_namespace_map(self, entities_xpath):
         nodes = []
-        for node in entities_path.split("/"):
-            for prefix, namespace in namespace_map.iteritems():
+        for node in entities_xpath.split("/"):
+            for prefix, namespace in self.namespace_map.iteritems():
                 node = node.replace("{0}:".format(prefix), "{{{0}}}".format(namespace))
             nodes.append(node)
 
@@ -42,8 +42,9 @@ class XmlDumpConverter(DumpConverter):
             if event == "end":
                 if "/".join(node_path) == self.entities_path:
                     # Process entity
-                    for entity_id, property_id, external_values in self.process_entity(element):
-                        yield entity_id, property_id, external_values
+                    for external_value_tuple in self.process_entity(element):
+                        if external_value_tuple is not None:
+                            yield external_value_tuple
 
                     # Print progress
                     if not self.is_quiet:
@@ -57,21 +58,26 @@ class XmlDumpConverter(DumpConverter):
                 del node_path[-1]
 
         # Write new line to console to now overwrite progress
-        sys.stdout.write("\n")
+        if not self.is_quiet:
+            sys.stdout.write("\n")
 
     # Processes single entity of the dump
     def process_entity(self, entity):
         # Get entity id
-        entity_id = entity.xpath(self.entity_id_path, namespaces=self.namespace_map)[0]
+        try:
+            entity_id = entity.xpath(self.entity_id_path, namespaces=self.namespace_map)[0]
+        except IndexError:
+            return
 
         # Evaluate mapping and extract values
         for property_id, mappings in self.property_mapping.iteritems():
+            external_values = []
             for mapping in mappings:
                 # Get affected elements
                 elements = []
-                for nodeSelector in mapping['nodes']:
+                for node_selector in mapping['nodes']:
                     # Evaluate xpath node selector
-                    result = entity.xpath(nodeSelector, namespaces=self.namespace_map)
+                    result = entity.xpath(node_selector, namespaces=self.namespace_map)
 
                     # Append result to nodes list in correct format
                     for i in range(0, len(result)):
@@ -81,7 +87,6 @@ class XmlDumpConverter(DumpConverter):
 
                 # Run formatter on nodes if provided
                 # Otherwise concat list of affected nodes
-                external_values = []
                 if "formatter" in mapping:
                     for element in elements:
                         formatted_value = self.run_formatter(mapping['formatter'], element)
@@ -91,5 +96,5 @@ class XmlDumpConverter(DumpConverter):
                     for element in elements:
                         external_values += element
 
-                if external_values:
-                    yield entity_id, property_id, external_values
+            if external_values:
+                yield entity_id, property_id, external_values

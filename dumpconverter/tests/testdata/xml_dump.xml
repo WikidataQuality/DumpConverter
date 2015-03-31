@@ -1,0 +1,14 @@
+<element xmlns="http://www.foo.com">
+    <subelement>
+        <id>119033364</id>
+    </subelement>
+    <subelement>
+        <id>492198073</id>
+    </subelement>
+    <subelement>
+        <id>728871632</id>
+    </subelement>
+    <wrong-subelement>
+        <id>847891274</id>
+    </wrong-subelement>
+</element>

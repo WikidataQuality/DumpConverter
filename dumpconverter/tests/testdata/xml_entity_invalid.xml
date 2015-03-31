@@ -1,0 +1,4 @@
+<subelement xmlns="http://www.foo.com">
+    <foo>bar</foo>
+    <fu>baz</fu>
+</subelement>
