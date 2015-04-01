@@ -1,6 +1,9 @@
 import pytest
 import unittest
 
+import csv
+import json
+
 from io import BytesIO
 
 from dumpconverter.exceptions import DownloadError
@@ -156,8 +159,12 @@ def test_write_entities_csv_row(identifier_pid, external_id, pid, value):
     dump_converter.write_entities_csv_row(identifier_pid, external_id, pid, value)
 
     # Run assertions
-    expected_row = ",".join(str(v) for v in [dump_converter.data_source_item_id, identifier_pid, external_id, pid, value])
-    assert expected_row == csv_entities_file.getvalue().rstrip("\r\n")
+    actual_row_fields = get_first_line_csv(csv_entities_file)
+    assert str(dump_converter.data_source_item_id) == actual_row_fields[0]
+    assert str(identifier_pid) == actual_row_fields[1]
+    assert external_id == actual_row_fields[2]
+    assert str(pid) == actual_row_fields[3]
+    assert value == actual_row_fields[4]
 
     # Close csv files
     csv_entities_file.close()
@@ -175,10 +182,10 @@ def test_write_meta_information():
     dump_converter.write_meta_information()
 
     # Run assertions
-    actual_row_fields = csv_meta_file.getvalue().rstrip("\r\n").split(",")
+    actual_row_fields = get_first_line_csv(csv_meta_file)
     assert str(dump_converter.data_source_item_id) == actual_row_fields[0]
     assert dump_converter.data_source_language == actual_row_fields[2]
-    assert dump_converter.data_source_urls[0] == actual_row_fields[3]
+    assert json.dumps(dump_converter.data_source_urls) == actual_row_fields[3]
     assert str(dump_converter.data_source_size) == actual_row_fields[4]
     assert dump_converter.data_source_license == actual_row_fields[5]
 
@@ -195,6 +202,22 @@ def get_file_size(file_obj):
     file_obj.seek(original_position)
 
     return size
+
+
+# Returns the first line of a given csv file
+def get_first_line_csv(csv_file):
+    # Save position and go to beginning
+    original_position = csv_file.tell()
+    csv_file.seek(0)
+
+    # Read first line
+    csv_reader = csv.reader(csv_file)
+    row = csv_reader.next()
+
+    # Restore original position
+    csv_file.seek(original_position)
+
+    return row
 
 
 # Creates dump converter instance for testing

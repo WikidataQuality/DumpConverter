@@ -1,6 +1,6 @@
 import csv
-import sys
 import math
+import json
 import urllib2
 import tempfile
 import datetime
@@ -70,7 +70,7 @@ class DumpConverter(object):
             self.data_source_size += downloaded_bytes
 
             # Write new line to console to now overwrite progress
-            sys.stdout.write("\n")
+            print "\n"
 
             return destination_file
         else:
@@ -88,7 +88,7 @@ class DumpConverter(object):
             message = message.format(DumpConverter.format_bytes(read_bytes))
 
         message += "\r"
-        sys.stdout.write(message)
+        print message,
 
     # Formats number of bytes to string with suitable unit.
     @staticmethod
@@ -128,7 +128,7 @@ class DumpConverter(object):
             self.data_source_item_id,
             datetime.datetime.utcnow(),
             self.data_source_language,
-            ", ".join(self.data_source_urls),
+            json.dumps(self.data_source_urls),
             self.data_source_size,
             self.data_source_license
         )

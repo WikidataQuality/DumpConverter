@@ -1,4 +1,3 @@
-import sys
 from lxml import etree
 
 
@@ -58,7 +57,7 @@ class XmlDumpConverter(DumpConverter):
 
         # Write new line to console to now overwrite progress
         if not self.is_quiet:
-            sys.stdout.write("\n")
+            print "\n"
 
         return
         yield
