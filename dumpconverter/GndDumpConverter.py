@@ -92,6 +92,8 @@ class GndDumpConverter(XmlDumpConverter):
             previous_year = date.year
             if previous_month <= 0:
                 previous_month = (date.month - 4) % 12
+                if previous_month == 0:
+                    previous_month = 12
                 previous_year -= 1
             date = datetime.date(previous_year, previous_month, 1)
 
