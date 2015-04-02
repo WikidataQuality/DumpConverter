@@ -57,7 +57,7 @@ class XmlDumpConverter(DumpConverter):
 
         # Write new line to console to now overwrite progress
         if not self.is_quiet:
-            print "\n"
+            print
 
         return
         yield

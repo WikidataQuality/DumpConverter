@@ -1,3 +1,4 @@
+import sys
 import csv
 import math
 import json
@@ -70,7 +71,8 @@ class DumpConverter(object):
             self.data_source_size += downloaded_bytes
 
             # Write new line to console to now overwrite progress
-            print "\n"
+            if not self.is_quiet:
+                print
 
             return destination_file
         else:
@@ -87,8 +89,8 @@ class DumpConverter(object):
             # Print only processed size as total size is unknown
             message = message.format(DumpConverter.format_bytes(read_bytes))
 
-        message += "\r"
-        print message,
+        sys.stdout.write("\r\033[K")
+        sys.stdout.write(message),
 
     # Formats number of bytes to string with suitable unit.
     @staticmethod

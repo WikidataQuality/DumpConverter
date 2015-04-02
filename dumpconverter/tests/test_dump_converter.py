@@ -40,26 +40,26 @@ def test_download_dump_error(url):
         "Progress...{0}",
         512,
         -1,
-        "Progress...512.0 B\r"
+        "Progress...512.0 B"
     ),
     (
         "Progress...{0}",
         1024,
         2048,
-        "Progress...50.0%\r"
+        "Progress...50.0%"
     ),
     (
         "Progress...",
         1024,
         2048,
-        "Progress...\r"
+        "Progress..."
     )
 ])
 def test_print_progress(message, read_bytes, total_bytes, expected_output, capsys):
     DumpConverter.print_progress(message, read_bytes, total_bytes)
 
     out, err = capsys.readouterr()
-    assert expected_output == str(out)
+    assert "\r\x1b[K" + expected_output == str(out)
 
 
 @pytest.mark.parametrize(["bytes", "precision", "expected_output"], [
