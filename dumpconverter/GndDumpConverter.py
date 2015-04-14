@@ -1,3 +1,4 @@
+"""Contains dump converter for dumps of the Integrated Authority File."""
 import gzip
 import datetime
 
@@ -7,13 +8,16 @@ from propertymappings import gnd
 
 
 class GndDumpConverter(XmlDumpConverter):
-    # Data source metadata
+    """
+    Dump converter for dumps of the Integrated Authority File (GND) of the
+    German National Library. Downloads latest dump files, processes entities and
+    writes values to csv files.
+    """
     ITEM_ID = 36578
     PROPERTY_ID = 227
     LANGUAGE = "de"
     LICENSE = "CC0 1.0"
 
-    # Download constants
     FILE_PREFIXES = [
         "Tpgesamt",
         "Tggesamt",
@@ -21,7 +25,6 @@ class GndDumpConverter(XmlDumpConverter):
     ]
     URL_FORMAT = "http://datendienst.dnb.de/cgi-bin/mabit.pl?cmd=fetch&userID=GNDxml&pass=gndmarcxml{0}{1}&mabheft={2}{0}{3}gndmrc.xml.gz"
 
-    # XML preferences
     XML_NAMESPACE_MAP = {
         "ns": "http://www.loc.gov/MARC21/slim"
     }
@@ -29,6 +32,12 @@ class GndDumpConverter(XmlDumpConverter):
     XML_ENTITY_ID_XPATH = "ns:controlfield[@tag='001']/text()"
 
     def __init__(self, csv_entities_file, csv_meta_file, is_quiet):
+        """
+        Creates new GndDumpConverter instance.
+        :param csv_entities_file: File object for external entities.
+        :param csv_meta_file: File object for meta information about the dump.
+        :param is_quiet: If set to True, console output will be suppressed.
+        """
         super(GndDumpConverter, self).__init__(
             csv_entities_file,
             csv_meta_file,
@@ -44,49 +53,53 @@ class GndDumpConverter(XmlDumpConverter):
 
         self.dump_urls = []
 
-    # Starts whole convert process.
     def execute(self):
+        """
+        Starts whole convert process.
+        """
         for file_prefix in self.FILE_PREFIXES:
-            # Print file prefix
             if not self.is_quiet:
                 print "Start to convert '{0}'".format(file_prefix)
 
-            # Get dump url
             dump_url = self.get_dump_url(file_prefix)
 
-            # Download dump
             try:
                 dump_file = self.download_dump(dump_url)
             except DownloadError.DownloadError:
                 dump_url = self.get_dump_url(file_prefix, fallback=True)
                 dump_file = self.download_dump(dump_url)
 
-            # Open compressed dump as gzip file
             uncompressed_dump_file = gzip.GzipFile(mode="rb", fileobj=dump_file)
 
-            # Process dump
-            for external_id, property_id, external_values in self.process_dump(uncompressed_dump_file):
-                for external_value in external_values:
-                    self.write_entities_csv_row(self.PROPERTY_ID, external_id, property_id, external_value)
+            process_dump_generator = self.process_dump(uncompressed_dump_file)
+            if process_dump_generator:
+                for external_id, property_id, external_values in process_dump_generator:
+                    for external_value in external_values:
+                        self.write_entities_csv_row(self.PROPERTY_ID, external_id,
+                                                    property_id, external_value)
 
-            # Close file
             uncompressed_dump_file.close()
             dump_file.close()
 
-            # Add url of downloaded dump to url list
             self.data_source_urls.append(dump_url)
 
             if not self.is_quiet:
                 print
 
-        # Write meta information
         self.write_meta_information()
 
-    # Returns url of the latest dump with specified prefix.
-    # If fallback option is set to True, url of previous dump will be returned.
     def get_dump_url(self, prefix, fallback=False, date=datetime.date.today()):
-        # If dump file does not exist, fallback option can be set True to build url of previous dump.
-        # This will be applicable, if new dump should be already available, but was not published yet.
+        """
+        Returns url of the latest dump with specified prefix.
+        If dump file does not exist, fallback option can be set True to
+        build url of previous dump.
+        This will be applicable, if new dump should be already available,
+        but was not published yet.
+        :param prefix: Prefix of the dump file.
+        :param fallback: If set to True, url of previous dump will be returned.
+        :param date: Datetime, on which the url generation is based on.
+        :return: Url of the dump
+        """
         if fallback:
             previous_month = date.month - 4
             previous_year = date.year
@@ -97,7 +110,6 @@ class GndDumpConverter(XmlDumpConverter):
                 previous_year -= 1
             date = datetime.date(previous_year, previous_month, 1)
 
-        # Set parameter depending on month
         year = date.year
         if date.month == 1:
             index = 3

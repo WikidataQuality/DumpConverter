@@ -11,14 +11,11 @@ from dumpconverter.DumpConverter import DumpConverter
 
 
 def test_download_dump_success():
-    # Create converter
     dump_converter = create_dump_converter()
 
-    # Download test page that returns 200
     url = "http://httpstat.us/200"
     downloaded_file = dump_converter.download_dump(url)
 
-    # Run assertions
     assert 0 == downloaded_file.tell()
     assert dump_converter.data_source_size == get_file_size(downloaded_file)
     assert "200 OK" == downloaded_file.read()
@@ -57,12 +54,12 @@ def test_download_dump_error(url):
 ])
 def test_print_progress(message, read_bytes, total_bytes, expected_output, capsys):
     DumpConverter.print_progress(message, read_bytes, total_bytes)
-
     out, err = capsys.readouterr()
+
     assert "\r\x1b[K" + expected_output == str(out)
 
 
-@pytest.mark.parametrize(["bytes", "precision", "expected_output"], [
+@pytest.mark.parametrize(["bytes_count", "precision", "expected_output"], [
     (
         0,
         2,
@@ -109,8 +106,9 @@ def test_print_progress(message, read_bytes, total_bytes, expected_output, capsy
         "1.0 ZB"
     )
 ])
-def test_format_bytes(bytes, precision, expected_output):
-    actual_output = DumpConverter.format_bytes(bytes, precision)
+def test_format_bytes(bytes_count, precision, expected_output):
+    actual_output = DumpConverter.format_bytes(bytes_count, precision)
+
     assert expected_output == actual_output
 
 
@@ -138,6 +136,7 @@ def test_format_bytes(bytes, precision, expected_output):
 ])
 def test_run_formatter(formatter, nodes, expected_result):
     actual_result = DumpConverter.run_formatter(formatter, nodes)
+
     assert actual_result == expected_result
 
 
@@ -150,48 +149,40 @@ def test_run_formatter(formatter, nodes, expected_result):
     )
 ])
 def test_write_entities_csv_row(identifier_pid, external_id, pid, value):
-    # Create file-like strings for csv output
     csv_entities_file = BytesIO()
     csv_meta_file = BytesIO()
 
-    # Create dump converter and write csv
     dump_converter = create_dump_converter(csv_entities_file, csv_meta_file)
     dump_converter.write_entities_csv_row(identifier_pid, external_id, pid, value)
 
-    # Run assertions
     actual_row_fields = get_first_line_csv(csv_entities_file)
+    csv_entities_file.close()
+    csv_meta_file.close()
+
     assert str(dump_converter.data_source_item_id) == actual_row_fields[0]
     assert str(identifier_pid) == actual_row_fields[1]
     assert external_id == actual_row_fields[2]
     assert str(pid) == actual_row_fields[3]
     assert value == actual_row_fields[4]
 
-    # Close csv files
-    csv_entities_file.close()
-    csv_meta_file.close()
-
 
 def test_write_meta_information():
-    # Create file-like strings for csv output
     csv_entities_file = BytesIO()
     csv_meta_file = BytesIO()
 
-    # Create dump converter and write csv
     dump_converter = create_dump_converter(csv_entities_file, csv_meta_file)
     dump_converter.data_source_urls = ["http://www.foo.bar"]
     dump_converter.write_meta_information()
 
-    # Run assertions
     actual_row_fields = get_first_line_csv(csv_meta_file)
+    csv_entities_file.close()
+    csv_meta_file.close()
+
     assert str(dump_converter.data_source_item_id) == actual_row_fields[0]
     assert dump_converter.data_source_language == actual_row_fields[2]
     assert json.dumps(dump_converter.data_source_urls) == actual_row_fields[3]
     assert str(dump_converter.data_source_size) == actual_row_fields[4]
     assert dump_converter.data_source_license == actual_row_fields[5]
-
-    # Close csv files
-    csv_entities_file.close()
-    csv_meta_file.close()
 
 
 # Returns the size of a given file object
@@ -206,15 +197,12 @@ def get_file_size(file_obj):
 
 # Returns the first line of a given csv file
 def get_first_line_csv(csv_file):
-    # Save position and go to beginning
     original_position = csv_file.tell()
     csv_file.seek(0)
 
-    # Read first line
     csv_reader = csv.reader(csv_file)
     row = csv_reader.next()
 
-    # Restore original position
     csv_file.seek(original_position)
 
     return row

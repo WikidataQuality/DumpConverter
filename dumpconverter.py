@@ -1,3 +1,7 @@
+"""
+Main script which executes dump converters and writes results in specified
+csv files.
+"""
 import argparse
 from tabulate import tabulate
 
@@ -14,7 +18,6 @@ importers = {
 
 
 def run():
-    # Parse arguments
     parser = argparse.ArgumentParser(description="This program downloads dumps from one or many databases and converts them to CSV data.")
     parser.add_argument("--list-databases", help="list all available databases, that can be imported, and exit", action="store_true")
     parser.add_argument("--database", "-d", help="name of a specific database that should be imported.")
@@ -30,18 +33,15 @@ def run():
 
         print tabulate(table_data, headers=["Name", "Description"])
     else:
-        # Open output files
         csv_entities_file = open(args.entities_file, "wb")
         csv_meta_file = open(args.meta_file, "wb")
 
-        # Run requested importer(s)
         if args.database:
             run_importer(args.database.lower(), csv_entities_file, csv_meta_file)
         else:
             for importer_name in importers.iterkeys():
                 run_importer(importer_name, csv_entities_file, csv_meta_file, args.quiet)
 
-        # Close file handles
         csv_entities_file.close()
         csv_meta_file.close()
 

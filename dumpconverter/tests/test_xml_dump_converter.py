@@ -35,30 +35,25 @@ def test_apply_namespace_map(entities_path, expected_path):
 
 
 def test_process_dump():
-    # Read test dump file
     script_dir = os.path.dirname(__file__)
     dump_file = open(os.path.join(script_dir, "testdata/xml_dump.xml"), "rb")
 
-    # Create mocked dump converter
     dump_converter = create_dump_converter()
     def process_entity_mock(xml_entity):
         yield xml_entity
     dump_converter.process_entity = process_entity_mock
 
-    # Parse test dump file and get expected result
     xml_tree = etree.parse(dump_file)
-    expected_result = xml_tree.xpath("../" + dump_converter.entities_xpath, namespaces=dump_converter.namespace_map)
+    expected_result = xml_tree.xpath("../" + dump_converter.entities_xpath,
+                                     namespaces=dump_converter.namespace_map)
     dump_file.seek(0)
 
-    # Process dump_file
     actual_result = list(dump_converter.process_dump(dump_file))
 
-    # Run assertions
     assert len(expected_result) == len(actual_result)
-
-    deannotate_function = lambda x: objectify.deannotate(x, cleanup_namespaces=True)
-    actual_result = map(deannotate_function, actual_result)
-    expected_result = map(deannotate_function, expected_result)
+    deannotate = lambda x: objectify.deannotate(x, cleanup_namespaces=True)
+    actual_result = map(deannotate, actual_result)
+    expected_result = map(deannotate, expected_result)
     assert expected_result == actual_result
 
 
@@ -77,20 +72,17 @@ def test_process_dump():
     )
 ])
 def test_process_entity(entity_file_path, expected_result):
-    # Parse test entity file
     script_dir = os.path.dirname(__file__)
     entity_file = etree.parse(os.path.join(script_dir, entity_file_path)).getroot()
 
-    # Create converter and process entity_file
     dump_converter = create_dump_converter()
     actual_result = list(dump_converter.process_entity(entity_file))
 
-    # Run assertions
     assert expected_result == actual_result
 
 
-# Creates dump converter instance for testing
 def create_dump_converter():
+    """Creates dump converter instance for testing."""
     property_mapping = {
         1: [
             {

@@ -31,9 +31,8 @@ def test_execute_success(expected_value_quadruplets):
     # In order to access this variable from inner function, array instead of integer is used (workaround)
     actual_value_count = [0]
 
-    # Create mocked dump converter
     dump_converter = create_dump_converter()
-    def download_dump_mock(dump_url):
+    def download_dump_mock(url):
         script_dir = os.path.dirname(__file__)
         return open(os.path.join(script_dir, "testdata/gnd_dump.xml.gz"), "rb")
     def write_entities_csv_row_mock(identifier_pid, external_id, pid, value):
@@ -44,22 +43,18 @@ def test_execute_success(expected_value_quadruplets):
     dump_converter.download_dump = download_dump_mock
     dump_converter.write_entities_csv_row = write_entities_csv_row_mock
 
-    # Execute converter
     dump_converter.execute()
 
-    # Run assertions
     assert len(expected_value_quadruplets) == actual_value_count[0]
 
 
 def test_execute_error():
     with pytest.raises(DownloadError.DownloadError):
-        # Create mocked dump converter
         dump_converter = create_dump_converter()
         def download_dump_mock(dump_url):
             raise DownloadError.DownloadError()
         dump_converter.download_dump = download_dump_mock
 
-        # Execute converter
         dump_converter.execute()
 
 
@@ -116,7 +111,6 @@ def test_get_dump_url(prefix, date, fallback, expected_url):
     assert expected_url == actual_url
 
 
-# Creates dump converter instance for testing
 def create_dump_converter():
     dump_converter = GndDumpConverter(
         BytesIO(),
