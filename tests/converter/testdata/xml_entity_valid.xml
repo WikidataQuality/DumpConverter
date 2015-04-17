@@ -1,0 +1,13 @@
+<subelement xmlns="http://www.foo.com" id="119033364">
+    <title>Answer to the Ultimate Question of Life, the Universe, and Everything</title>
+    <foo>foobar</foo>
+    <fubar>42</fubar>
+    <foobar>
+        <foo>foo</foo>
+        <bar>bar</bar>
+    </foobar>
+    <foobar>
+        <foo>fu</foo>
+        <bar>bar</bar>
+    </foobar>
+</subelement>
