@@ -1,5 +1,6 @@
-"""Contains several formatters for GND data source."""
 # coding: utf8
+
+"""Contains several formatters for GND data source."""
 
 
 def gender_formatter(gender):
