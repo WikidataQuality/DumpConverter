@@ -2,7 +2,7 @@
 import urllib2
 
 from dumpconverter.exceptions import DownloadError
-import consoleutils
+from dumpconverter.utils import consoleutils
 
 DOWNLOAD_TIMEOUT = 10
 DOWNLOAD_BUFFER_SIZE = 8192

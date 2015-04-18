@@ -1,7 +1,4 @@
-"""
-Contains writer for writing conversion result to csv files and
-creating tar archives containing them.
-"""
+"""Contains class for writing conversion results to file."""
 import csv
 from datetime import datetime
 import tarfile
@@ -9,6 +6,10 @@ import tempfile
 
 
 class ResultWriter():
+    """
+    Contains writer for writing conversion result to csv files and
+    creating tar archives containing them.
+    """
     EXTERNAL_DATA_FILE_NAME = "external_data.csv"
     DUMP_INFORMATION_FILE_NAME = "dump_information.csv"
     IDENTIFIER_PROPERTIES_FILE_NAME = "identifier_properties.csv"

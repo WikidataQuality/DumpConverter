@@ -5,6 +5,10 @@ from dumpconverter.utils import consoleutils
 
 
 class XmlDumpConverter():
+    """
+    Dump converter for dumps in xml format. Is responsible for splitting dump
+    into single entities and process them by applying given property mapping.
+    """
     def __init__(self, entities_path, entity_id_path, property_mapping,
                  namespaces=None, is_quiet=False):
         """
