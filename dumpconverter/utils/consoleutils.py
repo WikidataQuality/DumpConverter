@@ -17,7 +17,8 @@ def print_progress(message, current_bytes, total_bytes=None):
         message = message.format(format_bytes(current_bytes))
 
     sys.stdout.write("\r\033[K")
-    sys.stdout.write(message),
+    sys.stdout.write(message)
+    sys.stdout.flush()
 
 
 def format_bytes(bytes_count, precision=2):
