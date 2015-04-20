@@ -23,7 +23,7 @@ class GndDumpConverter():
 
     FILE_PREFIXES = {
         "GND-Tpgesamt": "Tpgesamt",
-        "GND-Rggesamt": "Tggesamt",
+        "GND-Tggesamt": "Tggesamt",
         "GND-Tugesamt": "Tugesamt"
     }
     URL_FORMAT = "http://datendienst.dnb.de/cgi-bin/mabit.pl?cmd=fetch&userID=GNDxml&pass=gndmarcxml{0}{1}&mabheft={2}{0}{3}gndmrc.xml.gz"
