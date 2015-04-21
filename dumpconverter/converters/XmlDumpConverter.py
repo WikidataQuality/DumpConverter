@@ -92,9 +92,7 @@ class XmlDumpConverter():
 
                     if "formatter" in mapping:
                         formatter = mapping['formatter']
-                        formatted_values = self.run_formatter(formatter, values)
-                        if formatted_values:
-                            external_values += formatted_values
+                        external_values += self.run_formatter(formatter, values)
                     else:
                         for value in values:
                             external_values += value
@@ -151,8 +149,7 @@ class XmlDumpConverter():
             if formatted_value:
                 formatted_values.append(formatted_value)
 
-        if formatted_values:
-            return formatted_values
+        return formatted_values
 
     @staticmethod
     def formatter_wrapper(formatter, values):

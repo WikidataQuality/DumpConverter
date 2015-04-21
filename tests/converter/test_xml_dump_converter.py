@@ -153,7 +153,7 @@ def test_get_affected_values(entity_file_path, value_paths, expected_values):
             ["foo"],
             ["fu"]
         ],
-        None
+        []
     )
 ])
 def test_run_formatter(formatter, values, expected_values):

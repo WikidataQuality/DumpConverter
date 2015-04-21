@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name = "DumpConverter",
-    version = "1.0.0",
-    author = "BP2014N1",
-    author_email = "BP2014N1@hpi.de",
-    description = ("Downloads and parses dumps of databases for "
-                   "external validation in Wikidata extension WikidataQuality"),
-    license = "GNU GPL v2+",
-    url = "https://github.com/WikidataQuality/DumpConverter",
+    name="DumpConverter",
+    version="1.0.0",
+    author="BP2014N1",
+    author_email="BP2014N1@hpi.de",
+    description=("Downloads and parses dumps of databases for "
+                 "external validation in Wikidata extension WikidataQuality"),
+    license="GNU GPL v2+",
+    url="https://github.com/WikidataQuality/DumpConverter",
     packages=['dumpconverter'],
     install_requires=[
         "argparse==1.3.0",

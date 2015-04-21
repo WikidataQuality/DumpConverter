@@ -44,8 +44,8 @@ class ResultWriter():
         )
         self.external_data_writer.writerow(row)
 
-    def write_dump_information(self, dump_id, data_source_item_id, language, source_url,
-                               size, license_item_id):
+    def write_dump_information(self, dump_id, data_source_item_id, language,
+                               source_url, size, license_item_id):
         """
         Writes meta information about a single dump to file.
         :param dump_id: Id of the dump.
