@@ -19,7 +19,7 @@ def run():
     parser = argparse.ArgumentParser(description="This program downloads dumps from one or many databases and converts them into a format, that can be imported by WikidataQualityExternalValidation extension.")
     parser.add_argument("--list-databases", help="list all available databases, that can be imported, and exit", action="store_true")
     parser.add_argument("--database", "-d", help="name of a specific database that should be imported.")
-    parser.add_argument("--output-file", "-o", help="TAR output file for data values of dumps.", default="external_values.tar")
+    parser.add_argument("--output-file", "-o", help="TAR output file for data values of dumps.", default="external_data.tar")
     parser.add_argument("--quiet", "-q", help="suppress output", action="store_true")
     args = parser.parse_args()
 

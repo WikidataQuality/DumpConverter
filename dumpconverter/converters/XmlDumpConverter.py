@@ -68,7 +68,7 @@ class XmlDumpConverter():
                         del element.getparent()[0]
 
                     if not self.is_quiet:
-                        message = "Process database dump...{0}"
+                        message = "Processing database dump...{0}"
                         consoleutils.print_progress(message, dump_file.tell())
                 del node_path[-1]
 
@@ -92,7 +92,9 @@ class XmlDumpConverter():
 
                     if "formatter" in mapping:
                         formatter = mapping['formatter']
-                        external_values = self.run_formatter(formatter, values)
+                        formatted_values = self.run_formatter(formatter, values)
+                        if formatted_values:
+                            external_values += formatted_values
                     else:
                         for value in values:
                             external_values += value
@@ -128,7 +130,7 @@ class XmlDumpConverter():
                 if i >= len(elements):
                     elements.append([])
 
-                if isinstance(result[i], str):
+                if isinstance(result[i], str) or isinstance(result[i], unicode):
                     elements[i].append(result[i].encode("utf-8"))
                 else:
                     elements[i].append(result[i].text)
@@ -146,7 +148,7 @@ class XmlDumpConverter():
         formatted_values = []
         for value in values:
             formatted_value = XmlDumpConverter.formatter_wrapper(formatter, value)
-            if formatted_value is not None:
+            if formatted_value:
                 formatted_values.append(formatted_value)
 
         if formatted_values:

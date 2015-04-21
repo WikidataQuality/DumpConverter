@@ -10,7 +10,7 @@ class ResultWriter():
     Contains writer for writing conversion result to csv files and
     creating tar archives containing them.
     """
-    EXTERNAL_DATA_FILE_NAME = "external_data.csv"
+    EXTERNAL_VALUES_FILE_NAME = "external_values.csv"
     DUMP_INFORMATION_FILE_NAME = "dump_information.csv"
     IDENTIFIER_PROPERTIES_FILE_NAME = "identifier_properties.csv"
 
@@ -44,10 +44,11 @@ class ResultWriter():
         )
         self.external_data_writer.writerow(row)
 
-    def write_dump_information(self, data_source_item_id, language, source_url,
+    def write_dump_information(self, dump_id, data_source_item_id, language, source_url,
                                size, license_item_id):
         """
         Writes meta information about a single dump to file.
+        :param dump_id: Id of the dump.
         :param data_source_item_id: Id of the Wikidata item of the data source.
         :param language: Language code.
         :param source_url: Source url.
@@ -56,6 +57,7 @@ class ResultWriter():
         :return:
         """
         row = (
+            dump_id,
             data_source_item_id,
             datetime.utcnow(),
             language,
@@ -83,7 +85,7 @@ class ResultWriter():
         :param file_path: Path of the archive file that is to be created.
         """
         with tarfile.open(file_path, mode="w:gz") as tar_file:
-            self.add_file_to_tar(tar_file, self.EXTERNAL_DATA_FILE_NAME,
+            self.add_file_to_tar(tar_file, self.EXTERNAL_VALUES_FILE_NAME,
                                  self.external_data_file)
             self.add_file_to_tar(tar_file, self.DUMP_INFORMATION_FILE_NAME,
                                  self.dump_information_file)

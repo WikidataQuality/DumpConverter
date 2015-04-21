@@ -66,6 +66,7 @@ class GndDumpConverter():
                 self.IDENTIFIER_PROPERTY_ID,
                 dump_id)
             result.write_dump_information(
+                dump_id,
                 self.DATA_SOURCE_ITEM_ID,
                 self.LANGUAGE,
                 dump_url,

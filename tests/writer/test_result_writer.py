@@ -34,6 +34,7 @@ class ResultWriterTest(unittest.TestCase):
         assert value == actual_row_fields[3]
 
     def test_write_dump_information(self):
+        dump_id = "foobar"
         data_source_item_id = "Q42"
         language = "en"
         source_url = "http://foo.bar"
@@ -41,17 +42,18 @@ class ResultWriterTest(unittest.TestCase):
         license_item_id = "Q21"
 
         result = ResultWriter()
-        result.write_dump_information(data_source_item_id, language,
+        result.write_dump_information(dump_id, data_source_item_id, language,
                                       source_url, size, license_item_id)
 
         actual_row_fields = self.get_first_line_csv(result.dump_information_file)
         result.close()
 
-        assert data_source_item_id == actual_row_fields[0]
-        assert language == actual_row_fields[2]
-        assert source_url == actual_row_fields[3]
-        assert str(size) == actual_row_fields[4]
-        assert license_item_id == actual_row_fields[5]
+        assert dump_id  == actual_row_fields[0]
+        assert data_source_item_id == actual_row_fields[1]
+        assert language == actual_row_fields[3]
+        assert source_url == actual_row_fields[4]
+        assert str(size) == actual_row_fields[5]
+        assert license_item_id == actual_row_fields[6]
 
     def test_write_identifier_property(self):
         identifier_property_id = "P42"
@@ -72,7 +74,7 @@ class ResultWriterTest(unittest.TestCase):
 
         with tarfile.open(self.test_archive_name) as tar_file:
             actual_names = self.get_file_names(tar_file)
-            expected_names = [ResultWriter.EXTERNAL_DATA_FILE_NAME,
+            expected_names = [ResultWriter.EXTERNAL_VALUES_FILE_NAME,
                               ResultWriter.DUMP_INFORMATION_FILE_NAME,
                               ResultWriter.IDENTIFIER_PROPERTIES_FILE_NAME]
             assert sorted(actual_names) == sorted(expected_names)
