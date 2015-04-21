@@ -12,5 +12,4 @@ script:
     - py.test --verbose --cov-config .coveragerc --cov dumpconverter --cov-report xml
 
 after_success:
-    - coveralls debug
     - coveralls
