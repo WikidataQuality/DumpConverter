@@ -29,7 +29,7 @@ class GndDumpConverter():
     URL_FORMAT = "http://datendienst.dnb.de/cgi-bin/mabit.pl?cmd=fetch&userID=GNDxml&pass=gndmarcxml{0}{1}&mabheft={2}{0}{3}gndmrc.xml.gz"
 
     XML_ENTITIES_PATH = "ns:collection/ns:record"
-    XML_ENTITY_ID_XPATH = "ns:controlfield[@tag='001']/text()"
+    XML_ENTITY_ID_XPATH = "substring-after(ns:datafield[@tag='035']/ns:subfield[@code='a' and starts-with(./text(), '(DE-588)')], '(DE-588)')"
     XML_NAMESPACES = {
         "ns": "http://www.loc.gov/MARC21/slim"
     }

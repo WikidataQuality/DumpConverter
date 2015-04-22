@@ -143,14 +143,14 @@ property_mapping = {
     'P50': [
         {
             "value_paths": [
-                "ns:datafield[@tag='100' and @ind1='1' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='s']/ns:subfield[@code='a']/text()"
+                "ns:datafield[@tag='100' and @ind1='1' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='u']/ns:subfield[@code='a']/text()"
             ],
             "formatter": basic_name_formatter
         },
         {
             "value_paths": [
-                "ns:datafield[@tag='100' and @ind1='0' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='s']/ns:subfield[@code='a']/text()",
-                "ns:datafield[@tag='100' and @ind1='0' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='s']/ns:subfield[@code='b']/text()"
+                "ns:datafield[@tag='100' and @ind1='0' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='u']/ns:subfield[@code='a']/text()",
+                "ns:datafield[@tag='100' and @ind1='0' and //ns:datafield[@tag='079']/ns:subfield[@code='b']='u']/ns:subfield[@code='b']/text()"
             ],
             "formatter": personal_name_formatter
         }

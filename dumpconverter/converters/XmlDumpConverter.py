@@ -106,11 +106,16 @@ class XmlDumpConverter():
         :param entity_element: Xml element of a single entity.
         :return: Id of the given entity.
         """
-        try:
-            return entity_element.xpath(self.entity_id_path,
-                                        namespaces=self.namespaces)[0]
-        except IndexError:
-            pass
+        entity_id = entity_element.xpath(self.entity_id_path,
+                                        namespaces=self.namespaces)
+
+        if isinstance(entity_id, basestring):
+            return entity_id
+        elif isinstance(entity_id, list):
+            try:
+                return entity_id[0]
+            except IndexError:
+                pass
 
     def get_affected_values(self, entity_element, value_paths):
         """
