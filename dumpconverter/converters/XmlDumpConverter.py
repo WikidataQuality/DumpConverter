@@ -98,7 +98,7 @@ class XmlDumpConverter():
                             external_values += value
 
                 if external_values:
-                    yield entity_id, property_id, external_values
+                    yield entity_id, property_id, list(set(external_values))
 
     def extract_entity_id(self, entity_element):
         """

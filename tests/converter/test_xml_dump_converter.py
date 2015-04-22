@@ -57,9 +57,10 @@ def test_process_dump():
     (
         "testdata/xml_entity_valid.xml",
         [
-            ("119033364", 1, ["foobar"]),
-            ("119033364", 2, ["Answer to the Ultimate Question of Life, the Universe, and Everything=42"]),
-            ("119033364", 3, ["foobar", "42"])
+            ("119033364", "P1", ["foobar"]),
+            ("119033364", "P2", ["Answer to the Ultimate Question of Life, the Universe, and Everything=42"]),
+            ("119033364", "P3", ["foobar", "42"]),
+            ("119033364", "P4", ["fubar"])
         ]
     ),
     (
@@ -73,7 +74,9 @@ def test_process_entity(entity_file_path, expected_values):
         xml_converter = create_dump_converter()
         actual_values = list(xml_converter.process_entity(entity_element))
 
-        assert expected_values == actual_values
+        assert len(expected_values) == len(actual_values)
+        for expected_value in expected_values:
+            assert expected_value in actual_values
 
 
 @pytest.mark.parametrize(["entity_file_path", "expected_entity_id"], [
@@ -189,12 +192,12 @@ def create_dump_converter():
     :return: Instance of XmlDumpConverter.
     """
     property_mapping = {
-        1: [
+        "P1": [
             {
                 "value_paths": ["foo:foo"]
             }
         ],
-        2: [
+        "P2": [
             {
                 "value_paths": [
                     "foo:title",
@@ -203,7 +206,7 @@ def create_dump_converter():
                 "formatter": lambda x, y: x + "=" + y
             }
         ],
-        3: [
+        "P3": [
             {
                 "value_paths": ["foo:foo"]
             },
@@ -211,9 +214,14 @@ def create_dump_converter():
                 "value_paths": ["foo:fubar"]
             }
         ],
-        4: [
+        "P4": [
             {
                 "value_paths": ["foo:bar"]
+            }
+        ],
+        "P5": [
+            {
+                "value_paths": [ "foo:baz" ]
             }
         ]
     }
