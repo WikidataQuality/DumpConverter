@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 import tarfile
 import tempfile
+import json
 
 
 class ResultWriter():
@@ -12,7 +13,6 @@ class ResultWriter():
     """
     EXTERNAL_VALUES_FILE_NAME = "external_values.csv"
     DUMP_INFORMATION_FILE_NAME = "dump_information.csv"
-    IDENTIFIER_PROPERTIES_FILE_NAME = "identifier_properties.csv"
 
     def __init__(self):
         """
@@ -23,9 +23,6 @@ class ResultWriter():
 
         self.dump_information_file = tempfile.TemporaryFile()
         self.dump_information_writer = csv.writer(self.dump_information_file)
-
-        self.identifier_properties_file = tempfile.TemporaryFile()
-        self.identifier_properties_writer = csv.writer(self.identifier_properties_file)
 
     def write_external_value(self, dump_id, external_id,
                              property_id, value):
@@ -44,12 +41,14 @@ class ResultWriter():
         )
         self.external_data_writer.writerow(row)
 
-    def write_dump_information(self, dump_id, data_source_item_id, language,
+    def write_dump_information(self, dump_id, data_source_item_id,
+                               identifier_property_ids, language,
                                source_url, size, license_item_id):
         """
         Writes meta information about a single dump to file.
         :param dump_id: Id of the dump.
         :param data_source_item_id: Id of the Wikidata item of the data source.
+        :param identifier_property_ids: Ids of Wikidata properties for identifiers of the data source.
         :param language: Language code.
         :param source_url: Source url.
         :param size: File size in bytes.
@@ -59,6 +58,7 @@ class ResultWriter():
         row = (
             dump_id,
             data_source_item_id,
+            json.dumps(identifier_property_ids),
             datetime.utcnow(),
             language,
             source_url,
@@ -66,18 +66,6 @@ class ResultWriter():
             license_item_id
         )
         self.dump_information_writer.writerow(row)
-
-    def write_identifier_property(self, identifier_property_id, dump_id):
-        """
-        Writes tuple of identifier property and corresponding dump id to file.
-        :param identifier_property_id: Id of the Wikidata identifier property.
-        :param dump_id: Id of the dump.
-        """
-        row = (
-            identifier_property_id,
-            dump_id
-        )
-        self.identifier_properties_writer.writerow(row)
 
     def to_archive(self, file_path):
         """
@@ -89,8 +77,6 @@ class ResultWriter():
                                  self.external_data_file)
             self.add_file_to_tar(tar_file, self.DUMP_INFORMATION_FILE_NAME,
                                  self.dump_information_file)
-            self.add_file_to_tar(tar_file, self.IDENTIFIER_PROPERTIES_FILE_NAME,
-                                 self.identifier_properties_file)
 
     @staticmethod
     def add_file_to_tar(tar_file, name, fileobj):
@@ -112,4 +98,3 @@ class ResultWriter():
         """
         self.external_data_file.close()
         self.dump_information_file.close()
-        self.identifier_properties_file.close()

@@ -1,6 +1,7 @@
 """Contains tests for ResultWriter class"""
 import os
 import csv
+import json
 import tarfile
 import unittest
 from tempfile import TemporaryFile
@@ -36,37 +37,27 @@ class ResultWriterTest(unittest.TestCase):
     def test_write_dump_information(self):
         dump_id = "foobar"
         data_source_item_id = "Q42"
+        identifier_property_ids = ["P42"]
         language = "en"
         source_url = "http://foo.bar"
         size = 42
         license_item_id = "Q21"
 
         result = ResultWriter()
-        result.write_dump_information(dump_id, data_source_item_id, language,
+        result.write_dump_information(dump_id, data_source_item_id,
+                                      identifier_property_ids, language,
                                       source_url, size, license_item_id)
 
         actual_row_fields = self.get_first_line_csv(result.dump_information_file)
         result.close()
 
-        assert dump_id  == actual_row_fields[0]
+        assert dump_id == actual_row_fields[0]
         assert data_source_item_id == actual_row_fields[1]
-        assert language == actual_row_fields[3]
-        assert source_url == actual_row_fields[4]
-        assert str(size) == actual_row_fields[5]
-        assert license_item_id == actual_row_fields[6]
-
-    def test_write_identifier_property(self):
-        identifier_property_id = "P42"
-        dump_id = "foobar"
-
-        result = ResultWriter()
-        result.write_identifier_property(identifier_property_id, dump_id)
-
-        actual_row_fields = self.get_first_line_csv(result.identifier_properties_file)
-        result.close()
-
-        assert identifier_property_id == actual_row_fields[0]
-        assert dump_id == actual_row_fields[1]
+        assert identifier_property_ids == json.loads(actual_row_fields[2])
+        assert language == actual_row_fields[4]
+        assert source_url == actual_row_fields[5]
+        assert str(size) == actual_row_fields[6]
+        assert license_item_id == actual_row_fields[7]
 
     def test_to_archive(self):
         result = ResultWriter()
@@ -75,8 +66,7 @@ class ResultWriterTest(unittest.TestCase):
         with tarfile.open(self.test_archive_name) as tar_file:
             actual_names = self.get_file_names(tar_file)
             expected_names = [ResultWriter.EXTERNAL_VALUES_FILE_NAME,
-                              ResultWriter.DUMP_INFORMATION_FILE_NAME,
-                              ResultWriter.IDENTIFIER_PROPERTIES_FILE_NAME]
+                              ResultWriter.DUMP_INFORMATION_FILE_NAME]
             assert sorted(actual_names) == sorted(expected_names)
 
     def test_add_file_to_tar(self):
@@ -93,7 +83,6 @@ class ResultWriterTest(unittest.TestCase):
 
         assert result.external_data_file.closed
         assert result.dump_information_file.closed
-        assert result.identifier_properties_file.closed
 
     # Returns the first line of a given csv file
     def get_first_line_csv(self, csv_file):

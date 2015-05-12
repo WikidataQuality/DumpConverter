@@ -12,11 +12,10 @@ from dumpconverter.converters.GndDumpConverter import GndDumpConverter
 
 
 @patch.object(ResultWriter, "to_archive")
-@patch.object(ResultWriter, "write_identifier_property")
 @patch.object(ResultWriter, "write_dump_information")
 @patch.object(ResultWriter, "write_external_value")
-def test_execute(write_external_value_mock, write_dump_information_mock,
-                 write_identifier_property_mock, to_archive_mock):
+def test_execute(write_external_value_mock,
+                 write_dump_information_mock, to_archive_mock):
     script_dir = os.path.dirname(__file__)
     dump_file_path = os.path.join(script_dir, "testdata/gnd_dump.xml.gz")
     gnd_converter = GndDumpConverter(True)
@@ -29,7 +28,6 @@ def test_execute(write_external_value_mock, write_dump_information_mock,
     number_of_dumps = len(gnd_converter.FILE_PREFIXES)
     assert write_external_value_mock.call_count == 11 * number_of_dumps
     assert write_dump_information_mock.call_count == number_of_dumps
-    assert write_identifier_property_mock.call_count == number_of_dumps
     assert to_archive_mock.call_count == 1
 
 

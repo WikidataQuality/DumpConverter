@@ -62,12 +62,9 @@ class GndDumpConverter():
             uncompressed_dump_file = GzipFile(mode="rb", fileobj=dump_file)
 
             self.write_external_data(dump_id, uncompressed_dump_file, result)
-            result.write_identifier_property(
-                self.IDENTIFIER_PROPERTY_ID,
-                dump_id)
             result.write_dump_information(
                 dump_id,
-                self.DATA_SOURCE_ITEM_ID,
+                [self.DATA_SOURCE_ITEM_ID],
                 self.LANGUAGE,
                 dump_url,
                 dump_size,
