@@ -64,7 +64,8 @@ class GndDumpConverter():
             self.write_external_data(dump_id, uncompressed_dump_file, result)
             result.write_dump_information(
                 dump_id,
-                [self.DATA_SOURCE_ITEM_ID],
+                self.DATA_SOURCE_ITEM_ID,
+                [self.IDENTIFIER_PROPERTY_ID],
                 self.LANGUAGE,
                 dump_url,
                 dump_size,
