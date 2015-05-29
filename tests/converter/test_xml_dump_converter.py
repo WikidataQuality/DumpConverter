@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Contains test for XmlDumpConverter class"""
 import os
 import pytest
@@ -139,6 +140,27 @@ def test_get_affected_values(entity_file_path, value_paths, expected_values):
                                                            value_paths)
 
         assert expected_values == actual_values
+
+
+@pytest.mark.parametrize(["value", "expected_value"], [
+    (
+        u"foobar",
+        u"foobar"
+    ),
+    (
+        unichr(152) + u"foobar" + unichr(156),
+        u"foobar"
+    ),
+    (
+        u"füübar",
+        u"füübar"
+    )
+])
+def test_remove_control_characters(value, expected_value):
+    xml_converter = create_dump_converter()
+    actual_value = xml_converter.remove_control_characters(value)
+
+    assert expected_value == actual_value
 
 
 @pytest.mark.parametrize(["formatter", "values", "expected_values"], [

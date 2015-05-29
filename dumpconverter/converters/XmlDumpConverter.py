@@ -1,4 +1,5 @@
 """Contains dump converter class for processing xml dumps."""
+import unicodedata
 from lxml import etree
 
 from dumpconverter.utils import consoleutils
@@ -107,7 +108,7 @@ class XmlDumpConverter():
         :return: Id of the given entity.
         """
         entity_id = entity_element.xpath(self.entity_id_path,
-                                        namespaces=self.namespaces)
+                                         namespaces=self.namespaces)
 
         if isinstance(entity_id, basestring):
             return entity_id
@@ -130,15 +131,27 @@ class XmlDumpConverter():
                                           namespaces=self.namespaces)
 
             for i in range(0, len(result)):
+                value = result[i]
+                if isinstance(value, unicode):
+                    value = self.remove_control_characters(value)
+                elif not isinstance(value, str):
+                    value = value.text
+                value = value.encode("utf-8")
+
                 if i >= len(elements):
                     elements.append([])
-
-                if isinstance(result[i], str) or isinstance(result[i], unicode):
-                    elements[i].append(result[i].encode("utf-8"))
-                else:
-                    elements[i].append(result[i].text)
+                elements[i].append(value)
 
         return elements
+
+    @staticmethod
+    def remove_control_characters(value):
+        """
+        Removes all unicode control characters from a given string.
+        :param value: String value
+        :return: String without unicode control characters.
+        """
+        return "".join(ch for ch in value if unicodedata.category(ch)[0] != "C")
 
     @staticmethod
     def run_formatter(formatter, values):
