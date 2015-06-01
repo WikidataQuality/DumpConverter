@@ -59,7 +59,7 @@ class ResultWriter():
             dump_id,
             data_source_item_id,
             json.dumps(identifier_property_ids),
-            datetime.utcnow(),
+            datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
             language,
             source_url,
             size,
