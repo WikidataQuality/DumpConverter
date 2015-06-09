@@ -88,11 +88,11 @@ class XmlDumpConverter():
             for property_id, mappings in self.property_mapping.iteritems():
                 external_values = []
                 for mapping in mappings:
-                    value_paths = mapping['value_paths']
+                    value_paths = mapping["value_paths"]
                     values = self.get_affected_values(entity_element, value_paths)
 
                     if "formatter" in mapping:
-                        formatter = mapping['formatter']
+                        formatter = mapping["formatter"]
                         external_values += self.run_formatter(formatter, values)
                     else:
                         for value in values:
@@ -134,6 +134,7 @@ class XmlDumpConverter():
                 value = result[i]
                 if isinstance(value, unicode):
                     value = self.remove_control_characters(value)
+                    value = unicodedata.normalize("NFC", value)
                 elif not isinstance(value, str):
                     value = value.text
                 value = value.encode("utf-8")
