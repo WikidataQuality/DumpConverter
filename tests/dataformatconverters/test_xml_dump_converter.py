@@ -4,7 +4,7 @@ import os
 import pytest
 from lxml import etree, objectify
 
-from dumpconverter.converters.XmlDumpConverter import XmlDumpConverter
+from dumpconverter.dataformatconverters.XmlDumpConverter import XmlDumpConverter
 
 
 @pytest.mark.parametrize(["entities_path", "expected_path"], [

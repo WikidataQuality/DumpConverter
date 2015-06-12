@@ -1,8 +1,8 @@
 """Contains property mapping from GND to Wikidata."""
-from formatters.gnd import *
+from valueformatters import *
 
 
-property_mapping = {
+mapping = {
     # Properties for Persons (Tpgesamt)
     'P19': [
         {

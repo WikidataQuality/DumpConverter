@@ -1,6 +1,7 @@
 [report]
 omit = 
     *__init__*
-    dumpconverter/propertymappings/*
+    */propertymapping.py
+    */valueformatters.py
 	dumpconverter/exceptions/*
 	tests/*

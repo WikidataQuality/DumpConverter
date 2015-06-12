@@ -3,14 +3,13 @@ import datetime
 from gzip import GzipFile
 from tempfile import TemporaryFile
 
-from XmlDumpConverter import XmlDumpConverter
-from dumpconverter.propertymappings import gnd
+import propertymappings
+from dumpconverter.dataformatconverters.XmlDumpConverter import XmlDumpConverter
 from dumpconverter.utils import downloadutils
 from dumpconverter.exceptions.DownloadError import DownloadError
-from dumpconverter.writer.ResultWriter import ResultWriter
 
 
-class GndDumpConverter():
+class GndDumpConverter:
     """
     Dump converter for dumps of the Integrated Authority File (GND) of the
     German National Library. Downloads latest dump files, processes entities and
@@ -42,17 +41,15 @@ class GndDumpConverter():
         self.is_quiet = is_quiet
         self.xml_dump_converter = XmlDumpConverter(self.XML_ENTITIES_PATH,
                                                    self.XML_ENTITY_ID_XPATH,
-                                                   gnd.property_mapping,
+                                                   propertymappings.mapping,
                                                    self.XML_NAMESPACES,
                                                    is_quiet)
 
-    def execute(self, output_file_path):
+    def execute(self, result_writer):
         """
         Starts whole convert process.
-        :param output_file_path: File object for results.
+        :param result_writer: Writer for output of result.
         """
-        result = ResultWriter()
-
         for dump_id, file_prefix in self.FILE_PREFIXES.iteritems():
             if not self.is_quiet:
                 print "Start to convert '{0}'".format(file_prefix)
@@ -61,8 +58,11 @@ class GndDumpConverter():
 
             uncompressed_dump_file = GzipFile(mode="rb", fileobj=dump_file)
 
-            self.write_external_data(dump_id, uncompressed_dump_file, result)
-            result.write_dump_information(
+            self.write_external_data(
+                dump_id,
+                uncompressed_dump_file,
+                result_writer)
+            result_writer.write_dump_information(
                 dump_id,
                 self.DATA_SOURCE_ITEM_ID,
                 [self.IDENTIFIER_PROPERTY_ID],
@@ -76,9 +76,6 @@ class GndDumpConverter():
 
             if not self.is_quiet:
                 print
-
-        result.to_archive(output_file_path)
-        result.close()
 
     def get_dump_url(self, file_prefix, fallback=False, date=datetime.date.today()):
         """
@@ -124,8 +121,7 @@ class GndDumpConverter():
         """
         Downloads a dump identified by file prefix to destination file.
         :param file_prefix: Prefix of the dump file.
-        :param destination_file: Destination file object.
-        :return: List of url and size of downloaded file.
+        :return: List of file object, url and size of downloaded file.
         """
         dump_file = TemporaryFile()
         dump_url = self.get_dump_url(file_prefix)
@@ -144,15 +140,15 @@ class GndDumpConverter():
 
         return dump_file, dump_url, dump_size
 
-    def write_external_data(self, dump_id, dump_file, result):
+    def write_external_data(self, dump_id, dump_file, result_writer):
         """
         Processes dump and writes external values to file.
         :param dump_id: Id of the processing dump.
         :param dump_file: File object of the dump.
-        :param result: Current result writer.
+        :param result_writer: Current result writer.
         """
         external_data = self.xml_dump_converter.process_dump(dump_file)
         for external_id, property_id, external_values in external_data:
             for external_value in external_values:
-                result.write_external_value(dump_id, external_id,
-                                            property_id, external_value)
+                result_writer.write_external_value(dump_id, external_id,
+                                                   property_id, external_value)

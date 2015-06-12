@@ -6,7 +6,7 @@ import tempfile
 import json
 
 
-class ResultWriter():
+class ResultWriter:
     """
     Contains writer for writing conversion result to csv files and
     creating tar archives containing them.

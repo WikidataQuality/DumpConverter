@@ -5,7 +5,7 @@ from lxml import etree
 from dumpconverter.utils import consoleutils
 
 
-class XmlDumpConverter():
+class XmlDumpConverter:
     """
     Dump converter for dumps in xml format. Is responsible for splitting dump
     into single entities and process them by applying given property mapping.
@@ -59,7 +59,7 @@ class XmlDumpConverter():
             if event == "end":
                 if "/".join(node_path) == self.entities_path:
                     for external_value in self.process_entity(element):
-                        if external_value:
+                        if external_value is not None:
                             yield external_value
 
                     # Clean up unneeded references
