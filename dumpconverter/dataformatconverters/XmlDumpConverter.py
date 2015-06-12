@@ -85,7 +85,7 @@ class XmlDumpConverter:
         # Clean up unneeded references
         # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
         element.clear()
-        while element.getprevious() is not None:
+        if element.getparent() is not None:
             del element.getparent()[0]
 
     def process_entity(self, entity_element):
