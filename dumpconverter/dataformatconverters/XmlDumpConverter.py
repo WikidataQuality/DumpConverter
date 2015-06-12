@@ -61,21 +61,32 @@ class XmlDumpConverter:
                     for external_value in self.process_entity(element):
                         if external_value is not None:
                             yield external_value
+                    self.clean_up_references(element)
 
-                    # Clean up unneeded references
-                    # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
-                    element.clear()
-                    while element.getprevious() is not None:
-                        del element.getparent()[0]
+                elif not "/".join(node_path).startswith(self.entities_path):
+                    self.clean_up_references(element)
 
-                    if not self.is_quiet:
-                        message = "Processing database dump...{0}"
-                        consoleutils.print_progress(message, dump_file.tell())
                 del node_path[-1]
+                if not self.is_quiet:
+                    message = "Processing database dump...{0}"
+                    consoleutils.print_progress(message, dump_file.tell())
 
         # Write new line to console to overwrite progress
         if not self.is_quiet:
             print
+
+    @staticmethod
+    def clean_up_references(element):
+        """
+        Cleans up unneeded references of an given xml element.
+        See http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
+        :param element: Xml element
+        """
+        # Clean up unneeded references
+        # http://www.ibm.com/developerworks/xml/library/x-hiperfparse/
+        element.clear()
+        while element.getprevious() is not None:
+            del element.getparent()[0]
 
     def process_entity(self, entity_element):
         """
