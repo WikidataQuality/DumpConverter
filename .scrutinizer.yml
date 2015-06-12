@@ -7,4 +7,5 @@ build:
 filter:
     excluded_paths:
         - 'tests/*'
-        - 'dumpconverter/propertymappings/*'
+        - '*/propertymappings.py'
+        - '*/valueformatters.py'
