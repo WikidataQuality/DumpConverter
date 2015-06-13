@@ -17,5 +17,5 @@ if __name__ == "__main__":
         print tabulate(DumpConverter.get_available_databases(),
                        headers=["Key", "Description"])
     else:
-        converter = DumpConverter(args.database, args.output_file, args.quiet)
+        converter = DumpConverter(args.output_file, args.database, args.quiet)
         converter.execute()
