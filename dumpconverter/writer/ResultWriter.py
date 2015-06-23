@@ -1,8 +1,6 @@
 """Contains class for writing conversion results to file."""
 import csv
 from datetime import datetime
-import tarfile
-import tempfile
 import json
 
 
@@ -14,8 +12,8 @@ class ResultWriter:
     def __init__(self, external_values_file, dump_information_file):
         """
         Creates new ResultWriter instance.
-        :param external_values_file: File object for output of external values.
-        :param dump_information_file: File object for output of metadata of the dump.
+        :param external_values_file: File for output of external values.
+        :param dump_information_file: File for output of metadata of the dump.
         """
         self.external_data_writer = csv.writer(external_values_file)
         self.dump_information_writer = csv.writer(dump_information_file)
