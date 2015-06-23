@@ -4,6 +4,7 @@ import datetime
 
 import pytest
 from mock import patch
+from StringIO import StringIO
 
 from dumpconverter.exceptions.DownloadError import DownloadError
 from dumpconverter.writer.ResultWriter import ResultWriter
@@ -21,7 +22,7 @@ def test_execute(write_external_value_mock, write_dump_information_mock):
         dump_file = open(dump_file_path, "rb")
         return dump_file, None, None
     gnd_converter.download_dump = download_dump_mock
-    gnd_converter.execute(ResultWriter())
+    gnd_converter.execute(ResultWriter(StringIO(), StringIO()))
 
     number_of_dumps = len(gnd_converter.FILE_PREFIXES)
     assert write_external_value_mock.call_count == 11 * number_of_dumps
@@ -133,7 +134,7 @@ def test_write_external_data():
         yield expected_value_triple
     xml_dump_converter_mock.process_dump = process_dump_mock
     gnd_converter.xml_dump_converter = xml_dump_converter_mock
-    result_mock = ResultWriter()
+    result_mock = ResultWriter(StringIO(), StringIO())
     def write_external_value_mock(dump_id, external_id,
                                   property_id, external_value):
         assert expected_dump_id == dump_id

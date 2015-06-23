@@ -8,21 +8,17 @@ import json
 
 class ResultWriter:
     """
-    Contains writer for writing conversion result to csv files and
-    creating tar archives containing them.
+    Contains writer for writing conversion result to csv files.
     """
-    EXTERNAL_VALUES_FILE_NAME = "external_values.csv"
-    DUMP_INFORMATION_FILE_NAME = "dump_information.csv"
 
-    def __init__(self):
+    def __init__(self, external_values_file, dump_information_file):
         """
         Creates new ResultWriter instance.
+        :param external_values_file: File object for output of external values.
+        :param dump_information_file: File object for output of metadata of the dump.
         """
-        self.external_data_file = tempfile.TemporaryFile()
-        self.external_data_writer = csv.writer(self.external_data_file)
-
-        self.dump_information_file = tempfile.TemporaryFile()
-        self.dump_information_writer = csv.writer(self.dump_information_file)
+        self.external_data_writer = csv.writer(external_values_file)
+        self.dump_information_writer = csv.writer(dump_information_file)
 
     def write_external_value(self, dump_id, external_id,
                              property_id, value):
@@ -66,35 +62,3 @@ class ResultWriter:
             license_item_id
         )
         self.dump_information_writer.writerow(row)
-
-    def to_archive(self, file_path):
-        """
-        Creates tar archive containing written csv files.
-        :param file_path: Path of the archive file that is to be created.
-        """
-        with tarfile.open(file_path, mode="w:gz") as tar_file:
-            self.add_file_to_tar(tar_file, self.EXTERNAL_VALUES_FILE_NAME,
-                                 self.external_data_file)
-            self.add_file_to_tar(tar_file, self.DUMP_INFORMATION_FILE_NAME,
-                                 self.dump_information_file)
-
-    @staticmethod
-    def add_file_to_tar(tar_file, name, fileobj):
-        """
-        Adds file to a tar archive.
-        :param tar_file: Tar archive.
-        :param name: Name of the file that is to be added.
-        :param fileobj: File object that is to be added.
-        """
-        fileobj.flush()
-        fileobj.seek(0)
-
-        tar_info = tar_file.gettarinfo(arcname=name, fileobj=fileobj)
-        tar_file.addfile(tar_info, fileobj)
-
-    def close(self):
-        """
-        Close opened csv files.
-        """
-        self.external_data_file.close()
-        self.dump_information_file.close()

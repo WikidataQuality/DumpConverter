@@ -1,33 +1,25 @@
 """Contains tests for ResultWriter class"""
-import os
 import csv
 import json
-import tarfile
 import unittest
-from tempfile import TemporaryFile
+from StringIO import StringIO
 
 from dumpconverter.writer.ResultWriter import ResultWriter
 
 
 class ResultWriterTest(unittest.TestCase):
-    def setUp(self):
-        self.test_archive_name = "test_archive.tar"
-
-    def tearDown(self):
-        if os.path.isfile(self.test_archive_name):
-            os.remove(self.test_archive_name)
-
     def test_write_external_data(self):
         dump_id = "foobar"
         external_id = "foobar"
         property_id = "P42"
         value = "foobar"
 
-        result = ResultWriter()
+        dump_information_file = StringIO()
+        external_data_file = StringIO()
+        result = ResultWriter(external_data_file, dump_information_file)
         result.write_external_value(dump_id, external_id, property_id, value)
 
-        actual_row_fields = self.get_first_line_csv(result.external_data_file)
-        result.close()
+        actual_row_fields = self.get_first_line_csv(external_data_file)
 
         assert dump_id == actual_row_fields[0]
         assert external_id == actual_row_fields[1]
@@ -43,13 +35,14 @@ class ResultWriterTest(unittest.TestCase):
         size = 42
         license_item_id = "Q21"
 
-        result = ResultWriter()
+        dump_information_file = StringIO()
+        external_data_file = StringIO()
+        result = ResultWriter(external_data_file, dump_information_file)
         result.write_dump_information(dump_id, data_source_item_id,
                                       identifier_property_ids, language,
                                       source_url, size, license_item_id)
 
-        actual_row_fields = self.get_first_line_csv(result.dump_information_file)
-        result.close()
+        actual_row_fields = self.get_first_line_csv(dump_information_file)
 
         assert dump_id == actual_row_fields[0]
         assert data_source_item_id == actual_row_fields[1]
@@ -58,31 +51,6 @@ class ResultWriterTest(unittest.TestCase):
         assert source_url == actual_row_fields[5]
         assert str(size) == actual_row_fields[6]
         assert license_item_id == actual_row_fields[7]
-
-    def test_to_archive(self):
-        result = ResultWriter()
-        result.to_archive(self.test_archive_name)
-
-        with tarfile.open(self.test_archive_name) as tar_file:
-            actual_names = self.get_file_names(tar_file)
-            expected_names = [ResultWriter.EXTERNAL_VALUES_FILE_NAME,
-                              ResultWriter.DUMP_INFORMATION_FILE_NAME]
-            assert sorted(actual_names) == sorted(expected_names)
-
-    def test_add_file_to_tar(self):
-        expected_file_name = "foobar"
-        with TemporaryFile() as file_to_add:
-            with tarfile.open(self.test_archive_name, mode="w:gz") as tar_file:
-                ResultWriter.add_file_to_tar(tar_file,
-                                             expected_file_name, file_to_add)
-                assert [expected_file_name] == self.get_file_names(tar_file)
-
-    def test_close(self):
-        result = ResultWriter()
-        result.close()
-
-        assert result.external_data_file.closed
-        assert result.dump_information_file.closed
 
     # Returns the first line of a given csv file
     def get_first_line_csv(self, csv_file):
@@ -95,9 +63,6 @@ class ResultWriterTest(unittest.TestCase):
         csv_file.seek(original_position)
 
         return row
-
-    def get_file_names(self, tar_file):
-        return map(lambda tar_info: tar_info.name, tar_file.getmembers())
 
 
 if __name__ == "__main__":
