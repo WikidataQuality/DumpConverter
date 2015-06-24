@@ -18,6 +18,7 @@ sudo pip install -e DumpConverter
 
 **Options**
 * `--list-databases` list all available databases, that can be imported and exit
-* `-d / --database DATABASE` name of a specific database that should be imported
-* `-o / --output-file OUTPUT_FILE` output file for data values of dumps - default: external_data.tar
+* `-d / --database DATABASE` key of a specific database that should be imported
+* `--external-values-file EXTERNAL_VALUES_FILE` CSV output file for data values of dumps. - default: external_values.csv
+* `--dump-information-file DUMP_INFORMATION_FILE` CSV output file for meta informations of dumps. - default: dump_information.csv
 * `-q / --quiet` suppress output
