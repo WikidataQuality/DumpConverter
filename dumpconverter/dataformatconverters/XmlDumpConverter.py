@@ -144,9 +144,11 @@ class XmlDumpConverter:
             for i in range(0, len(result)):
                 raw_value = result[i]
                 if isinstance(raw_value, etree._Element):
-                    value = unicode(raw_value.text, encoding="utf-8", errors='ignore')
+                    value = unicode(raw_value.text, encoding="utf-8",
+                                    errors='ignore')
                 elif isinstance(raw_value, str):
-                    value = unicode(raw_value, encoding="utf-8", errors='ignore')
+                    value = unicode(raw_value, encoding="utf-8",
+                                    errors='ignore')
                 elif isinstance(raw_value, unicode):
                     value = raw_value
                 else:
