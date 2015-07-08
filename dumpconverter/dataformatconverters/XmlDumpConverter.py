@@ -142,13 +142,19 @@ class XmlDumpConverter:
                                           namespaces=self.namespaces)
 
             for i in range(0, len(result)):
-                value = result[i]
-                if isinstance(value, unicode):
-                    value = self.remove_control_characters(value)
-                    value = unicodedata.normalize("NFC", value)
-                elif not isinstance(value, str):
-                    value = value.text
-                value = value.encode("utf-8")
+                raw_value = result[i]
+                if isinstance(raw_value, etree._Element):
+                    value = unicode(raw_value.text, encoding="utf-8", errors='ignore')
+                elif isinstance(raw_value, str):
+                    value = unicode(raw_value, encoding="utf-8", errors='ignore')
+                elif isinstance(raw_value, unicode):
+                    value = raw_value
+                else:
+                    continue
+
+                value = unicodedata.normalize("NFC", value)
+                value = self.remove_unprintable_characters(value)
+                value = value.encode("utf-8", errors='ignore')
 
                 if i >= len(elements):
                     elements.append([])
@@ -157,11 +163,11 @@ class XmlDumpConverter:
         return elements
 
     @staticmethod
-    def remove_control_characters(value):
+    def remove_unprintable_characters(value):
         """
-        Removes all unicode control characters from a given string.
+        Removes all unprintable unicode characters from a given string.
         :param value: String value
-        :return: String without unicode control characters.
+        :return: String without unprintable unicode characters.
         """
         return "".join(ch for ch in value if unicodedata.category(ch)[0] != "C")
 

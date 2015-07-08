@@ -158,7 +158,7 @@ def test_get_affected_values(entity_file_path, value_paths, expected_values):
 ])
 def test_remove_control_characters(value, expected_value):
     xml_converter = create_dump_converter()
-    actual_value = xml_converter.remove_control_characters(value)
+    actual_value = xml_converter.remove_unprintable_characters(value)
 
     assert expected_value == actual_value
 
